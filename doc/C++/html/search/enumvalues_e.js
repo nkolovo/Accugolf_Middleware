@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['regiondestination_5fstream0_0',['RegionDestination_Stream0',['../group___camera_defs__h.html#gga0fb9224a380e186808b958984bc87059a15495328b11a7610dbb3ecc887368a4f',1,'Spinnaker']]],
+  ['regiondestination_5fstream1_1',['RegionDestination_Stream1',['../group___camera_defs__h.html#gga0fb9224a380e186808b958984bc87059abdbb799a2cc5af54c1094de461ef3ff1',1,'Spinnaker']]],
+  ['regiondestination_5fstream2_2',['RegionDestination_Stream2',['../group___camera_defs__h.html#gga0fb9224a380e186808b958984bc87059ac0c4187cb332ca6119362920ee0eea27',1,'Spinnaker']]],
+  ['regionmode_5foff_3',['RegionMode_Off',['../group___camera_defs__h.html#gga42cb7ad1ebeaa514abc373e605fca36fa99dce7de34849a060b52fa6604e1161e',1,'Spinnaker']]],
+  ['regionmode_5fon_4',['RegionMode_On',['../group___camera_defs__h.html#gga42cb7ad1ebeaa514abc373e605fca36faf19e550335eb9451cee2ace7c4126717',1,'Spinnaker']]],
+  ['regionselector_5fall_5',['RegionSelector_All',['../group___camera_defs__h.html#ggaa6b240975401c4c09276b2d7038d256ca7c6d2cac60c671d7a3b53e5028c16ccf',1,'Spinnaker']]],
+  ['regionselector_5fregion0_6',['RegionSelector_Region0',['../group___camera_defs__h.html#ggaa6b240975401c4c09276b2d7038d256cabf1609cf553a558e7de3b341bad7b4a5',1,'Spinnaker']]],
+  ['regionselector_5fregion1_7',['RegionSelector_Region1',['../group___camera_defs__h.html#ggaa6b240975401c4c09276b2d7038d256ca800468813f6eaa69aaa138c623c2c3f4',1,'Spinnaker']]],
+  ['regionselector_5fregion2_8',['RegionSelector_Region2',['../group___camera_defs__h.html#ggaa6b240975401c4c09276b2d7038d256ca525127da66ecf34deca341df5d49f3dc',1,'Spinnaker']]],
+  ['rgbtransformlightsource_5fcloudy6500k_9',['RgbTransformLightSource_Cloudy6500K',['../group___camera_defs__h.html#gga64c8ccc0d64c349af4fe96a8462d59eba2e6dd5449f0808d2e3bba1fd61e6a641',1,'Spinnaker']]],
+  ['rgbtransformlightsource_5fcoolfluorescent4000k_10',['RgbTransformLightSource_CoolFluorescent4000K',['../group___camera_defs__h.html#gga64c8ccc0d64c349af4fe96a8462d59eba51b561d08326896b9a5edfdfbdb76276',1,'Spinnaker']]],
+  ['rgbtransformlightsource_5fcustom_11',['RgbTransformLightSource_Custom',['../group___camera_defs__h.html#gga64c8ccc0d64c349af4fe96a8462d59ebaf1970e068fb7d3875e664aee389d025c',1,'Spinnaker']]],
+  ['rgbtransformlightsource_5fdaylight5000k_12',['RgbTransformLightSource_Daylight5000K',['../group___camera_defs__h.html#gga64c8ccc0d64c349af4fe96a8462d59ebaec4df92c81b5885fb978786290241761',1,'Spinnaker']]],
+  ['rgbtransformlightsource_5fgeneral_13',['RgbTransformLightSource_General',['../group___camera_defs__h.html#gga64c8ccc0d64c349af4fe96a8462d59ebaaeed37d821fdf79f7759c572411a2493',1,'Spinnaker']]],
+  ['rgbtransformlightsource_5fshade8000k_14',['RgbTransformLightSource_Shade8000K',['../group___camera_defs__h.html#gga64c8ccc0d64c349af4fe96a8462d59eba56a08271f873ed1b6242521c13a2b7b1',1,'Spinnaker']]],
+  ['rgbtransformlightsource_5ftungsten2800k_15',['RgbTransformLightSource_Tungsten2800K',['../group___camera_defs__h.html#gga64c8ccc0d64c349af4fe96a8462d59ebae24f8252047847bac32715c341df38cc',1,'Spinnaker']]],
+  ['rgbtransformlightsource_5fwarmfluorescent3000k_16',['RgbTransformLightSource_WarmFluorescent3000K',['../group___camera_defs__h.html#gga64c8ccc0d64c349af4fe96a8462d59eba00256086edf47250ce6715a4b681db78',1,'Spinnaker']]],
+  ['ro_17',['RO',['../group___types__h.html#gga5ea512734402935ca6e68723f6398862a42e9aa764b9ee7ecf7e668462de6f96d',1,'Spinnaker::GenApi']]],
+  ['running_18',['Running',['../_spin_simple_g_u_i___direct_show_8h.html#a446d4d9bb2bd2edc8b0431a8f6aa2696a2f5f2c4a8c4f4f0519d503dcdfbf55cb',1,'SpinSimpleGUI_DirectShow.h']]],
+  ['rw_19',['RW',['../group___types__h.html#gga5ea512734402935ca6e68723f6398862aec2497e0c8af01c04bec31ec0d1d7847',1,'Spinnaker::GenApi']]]
+];

@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['quality_0',['quality',['../structspin_j_p_e_g_option.html#a6b9888afa18cb95420dd38f456a2f926',1,'spinJPEGOption::quality'],['../structspin_j_p_g2_option.html#a6b9888afa18cb95420dd38f456a2f926',1,'spinJPG2Option::quality'],['../structspin_m_j_p_g_option.html#a6b9888afa18cb95420dd38f456a2f926',1,'spinMJPGOption::quality']]],
+  ['queryinterface_1',['QueryInterface',['../_enumeration___c_8c.html#ac78dd0b29ac326f85a8e96ebb824d432',1,'QueryInterface(spinInterface hInterface):&#160;Enumeration_C.c'],['../_enumeration___c___quick_spin_8c.html#ac78dd0b29ac326f85a8e96ebb824d432',1,'QueryInterface(spinInterface hInterface):&#160;Enumeration_C_QuickSpin.c']]],
+  ['quickspin_2',['quickSpin',['../structquick_spin.html',1,'']]],
+  ['quickspin_20access_3',['QuickSpin Access',['../group___c_quick_spin_access.html',1,'']]],
+  ['quickspinbooleannode_4',['quickSpinBooleanNode',['../_quick_spin_defs_c_8h.html#a1ba4ffe90c37960f2a084d536d704669',1,'QuickSpinDefsC.h']]],
+  ['quickspinc_2eh_5',['QuickSpinC.h',['../_quick_spin_c_8h.html',1,'']]],
+  ['quickspincommandnode_6',['quickSpinCommandNode',['../_quick_spin_defs_c_8h.html#aaac2f5b6f9bbdbe4cbd7c8bafeb54b90',1,'QuickSpinDefsC.h']]],
+  ['quickspindefsc_2eh_7',['QuickSpinDefsC.h',['../_quick_spin_defs_c_8h.html',1,'']]],
+  ['quickspinenumerationnode_8',['quickSpinEnumerationNode',['../_quick_spin_defs_c_8h.html#a95b730c91c1a50e3bfdbae9eb528d81e',1,'QuickSpinDefsC.h']]],
+  ['quickspinfloatnode_9',['quickSpinFloatNode',['../_quick_spin_defs_c_8h.html#a04ee5bdb32afbb6c19c76976e5a188fd',1,'QuickSpinDefsC.h']]],
+  ['quickspininit_10',['quickSpinInit',['../group___c_quick_spin_access.html#ga6ff16624a552b4255485d114815b9422',1,'QuickSpinC.h']]],
+  ['quickspininitex_11',['quickSpinInitEx',['../group___c_quick_spin_access.html#ga413937d42f9d13cc3f9de423ae52fc6a',1,'QuickSpinC.h']]],
+  ['quickspinintegernode_12',['quickSpinIntegerNode',['../_quick_spin_defs_c_8h.html#afa9f28d0ddeaeffa64c799e20b66bae3',1,'QuickSpinDefsC.h']]],
+  ['quickspinregisternode_13',['quickSpinRegisterNode',['../_quick_spin_defs_c_8h.html#ad381c8ff79704502f57f40fa679c4f92',1,'QuickSpinDefsC.h']]],
+  ['quickspinstringnode_14',['quickSpinStringNode',['../_quick_spin_defs_c_8h.html#aaaf3bc03791ad1aa076f3866944b428e',1,'QuickSpinDefsC.h']]],
+  ['quickspintldevice_15',['quickSpinTLDevice',['../structquick_spin_t_l_device.html',1,'']]],
+  ['quickspintldeviceinit_16',['quickSpinTLDeviceInit',['../group___c_quick_spin_access.html#ga42f54a9be2bf5fca821e5992137f1434',1,'QuickSpinC.h']]],
+  ['quickspintlinterface_17',['quickSpinTLInterface',['../structquick_spin_t_l_interface.html',1,'']]],
+  ['quickspintlinterfaceinit_18',['quickSpinTLInterfaceInit',['../group___c_quick_spin_access.html#gaf6aaa9d22670f3167bf14b450afdb4ba',1,'QuickSpinC.h']]],
+  ['quickspintlstream_19',['quickSpinTLStream',['../structquick_spin_t_l_stream.html',1,'']]],
+  ['quickspintlstreaminit_20',['quickSpinTLStreamInit',['../group___c_quick_spin_access.html#ga04d724132bcc8eaae462aed722efc787',1,'QuickSpinC.h']]],
+  ['quickspintlsystem_21',['quickSpinTLSystem',['../structquick_spin_t_l_system.html',1,'']]],
+  ['quickspintlsysteminit_22',['quickSpinTLSystemInit',['../group___c_quick_spin_access.html#ga8a9413b9e5e07d5da73388efcc223c39',1,'QuickSpinC.h']]]
+];

@@ -1,0 +1,77 @@
+var namespace_spinnaker_n_e_t_1_1_gen_api =
+[
+    [ "Helper", "namespace_spinnaker_n_e_t_1_1_gen_api_1_1_helper.html", "namespace_spinnaker_n_e_t_1_1_gen_api_1_1_helper" ],
+    [ "abstract", "class_spinnaker_n_e_t_1_1_gen_api_1_1abstract.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1abstract" ],
+    [ "BoolNode", "class_spinnaker_n_e_t_1_1_gen_api_1_1_bool_node.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_bool_node" ],
+    [ "Category", "class_spinnaker_n_e_t_1_1_gen_api_1_1_category.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_category" ],
+    [ "ChunkPort", "class_spinnaker_n_e_t_1_1_gen_api_1_1_chunk_port.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_chunk_port" ],
+    [ "Command", "class_spinnaker_n_e_t_1_1_gen_api_1_1_command.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_command" ],
+    [ "EnumEntry", "class_spinnaker_n_e_t_1_1_gen_api_1_1_enum_entry.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_enum_entry" ],
+    [ "Enumeration", "class_spinnaker_n_e_t_1_1_gen_api_1_1_enumeration.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_enumeration" ],
+    [ "EnumValue", "class_spinnaker_n_e_t_1_1_gen_api_1_1_enum_value.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_enum_value" ],
+    [ "EventPort", "class_spinnaker_n_e_t_1_1_gen_api_1_1_event_port.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_event_port" ],
+    [ "Float", "class_spinnaker_n_e_t_1_1_gen_api_1_1_float.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_float" ],
+    [ "FloatReg", "class_spinnaker_n_e_t_1_1_gen_api_1_1_float_reg.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_float_reg" ],
+    [ "GEVChunkAdapter", "class_spinnaker_n_e_t_1_1_gen_api_1_1_g_e_v_chunk_adapter.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_g_e_v_chunk_adapter" ],
+    [ "GEVEventAdapter", "class_spinnaker_n_e_t_1_1_gen_api_1_1_g_e_v_event_adapter.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_g_e_v_event_adapter" ],
+    [ "IBase", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_base.html", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_base" ],
+    [ "IBool", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_bool.html", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_bool" ],
+    [ "ICategory", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_category.html", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_category" ],
+    [ "ICommand", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_command.html", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_command" ],
+    [ "IDeviceInfo", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_device_info.html", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_device_info" ],
+    [ "IEnum", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_enum.html", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_enum" ],
+    [ "IEnumEntry", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_enum_entry.html", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_enum_entry" ],
+    [ "IFloat", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_float.html", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_float" ],
+    [ "IIDCChunkAdapter", "class_spinnaker_n_e_t_1_1_gen_api_1_1_i_i_d_c_chunk_adapter.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_i_i_d_c_chunk_adapter" ],
+    [ "IIDCEventAdapter", "class_spinnaker_n_e_t_1_1_gen_api_1_1_i_i_d_c_event_adapter.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_i_i_d_c_event_adapter" ],
+    [ "IInteger", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_integer.html", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_integer" ],
+    [ "INode", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_node.html", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_node" ],
+    [ "INodeMap", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_node_map.html", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_node_map" ],
+    [ "Integer", "class_spinnaker_n_e_t_1_1_gen_api_1_1_integer.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_integer" ],
+    [ "IntReg", "class_spinnaker_n_e_t_1_1_gen_api_1_1_int_reg.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_int_reg" ],
+    [ "IPort", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_port.html", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_port" ],
+    [ "IRegister", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_register.html", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_register" ],
+    [ "ISelector", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_selector.html", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_selector" ],
+    [ "IString", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_string.html", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_string" ],
+    [ "IValue", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_value.html", "interface_spinnaker_n_e_t_1_1_gen_api_1_1_i_value" ],
+    [ "Node", "class_spinnaker_n_e_t_1_1_gen_api_1_1_node.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_node" ],
+    [ "NodeMap", "class_spinnaker_n_e_t_1_1_gen_api_1_1_node_map.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_node_map" ],
+    [ "PortNode", "class_spinnaker_n_e_t_1_1_gen_api_1_1_port_node.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_port_node" ],
+    [ "Property", "class_spinnaker_n_e_t_1_1_gen_api_1_1_property.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_property" ],
+    [ "Register", "class_spinnaker_n_e_t_1_1_gen_api_1_1_register.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_register" ],
+    [ "StringNode", "class_spinnaker_n_e_t_1_1_gen_api_1_1_string_node.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_string_node" ],
+    [ "StringReg", "class_spinnaker_n_e_t_1_1_gen_api_1_1_string_reg.html", "class_spinnaker_n_e_t_1_1_gen_api_1_1_string_reg" ],
+    [ "Version", "struct_spinnaker_n_e_t_1_1_gen_api_1_1_version.html", "struct_spinnaker_n_e_t_1_1_gen_api_1_1_version" ],
+    [ "AccessMode", "namespace_spinnaker_n_e_t_1_1_gen_api.html#ab22d35ed086a478dd91e93ac78037f40", [
+      [ "NI", "namespace_spinnaker_n_e_t_1_1_gen_api.html#ab22d35ed086a478dd91e93ac78037f40afff6fa4fe7ddec3a931ca45d9e626ae7", null ],
+      [ "NA", "namespace_spinnaker_n_e_t_1_1_gen_api.html#ab22d35ed086a478dd91e93ac78037f40ad4cd0dabcf4caa22ad92fab40844c786", null ],
+      [ "WO", "namespace_spinnaker_n_e_t_1_1_gen_api.html#ab22d35ed086a478dd91e93ac78037f40ac9ea801a3956bc64d4f1d186bfe6a14a", null ],
+      [ "RO", "namespace_spinnaker_n_e_t_1_1_gen_api.html#ab22d35ed086a478dd91e93ac78037f40af5b15f58cabad73d1bf2de7bcb89db6c", null ],
+      [ "RW", "namespace_spinnaker_n_e_t_1_1_gen_api.html#ab22d35ed086a478dd91e93ac78037f40a5c6dc3d436504b7a65191cafe28212ee", null ]
+    ] ],
+    [ "CachingMode", "namespace_spinnaker_n_e_t_1_1_gen_api.html#a3742e22d7fe8eba99cc98b5c4e685ca5", [
+      [ "NoCache", "namespace_spinnaker_n_e_t_1_1_gen_api.html#a3742e22d7fe8eba99cc98b5c4e685ca5a9c2a36ed94b288fe8f5ce5b6b16d3fdd", null ],
+      [ "WriteThrough", "namespace_spinnaker_n_e_t_1_1_gen_api.html#a3742e22d7fe8eba99cc98b5c4e685ca5aacb7820573f20d69befb56e41f440549", null ],
+      [ "WriteAround", "namespace_spinnaker_n_e_t_1_1_gen_api.html#a3742e22d7fe8eba99cc98b5c4e685ca5aa3fe5421339096465a06b6ebc7196d0d", null ]
+    ] ],
+    [ "NameSpace", "namespace_spinnaker_n_e_t_1_1_gen_api.html#a0959a91a5c82080743d6e525d9666560", [
+      [ "Custom", "namespace_spinnaker_n_e_t_1_1_gen_api.html#a0959a91a5c82080743d6e525d9666560a90589c47f06eb971d548591f23c285af", null ],
+      [ "Standard", "namespace_spinnaker_n_e_t_1_1_gen_api.html#a0959a91a5c82080743d6e525d9666560aeb6d8ae6f20283755b339c0dc273988b", null ]
+    ] ],
+    [ "Representation", "namespace_spinnaker_n_e_t_1_1_gen_api.html#af48928113681f030672d5275d3f65589", [
+      [ "Linear", "namespace_spinnaker_n_e_t_1_1_gen_api.html#af48928113681f030672d5275d3f65589a32a843da6ea40ab3b17a3421ccdf671b", null ],
+      [ "Logarithmic", "namespace_spinnaker_n_e_t_1_1_gen_api.html#af48928113681f030672d5275d3f65589a2f8e38ec1a5832670c5011a71603c929", null ],
+      [ "Boolean", "namespace_spinnaker_n_e_t_1_1_gen_api.html#af48928113681f030672d5275d3f65589a27226c864bac7454a8504f8edb15d95b", null ],
+      [ "PureNumber", "namespace_spinnaker_n_e_t_1_1_gen_api.html#af48928113681f030672d5275d3f65589ae526c0d127dfece582ecde4a6d71f69e", null ],
+      [ "HexNumber", "namespace_spinnaker_n_e_t_1_1_gen_api.html#af48928113681f030672d5275d3f65589abc724a281074487fef66e07ac325e9e6", null ]
+    ] ],
+    [ "Visibility", "namespace_spinnaker_n_e_t_1_1_gen_api.html#a53d6f8ccb0015ea020228de41cfd2162", [
+      [ "Beginner", "namespace_spinnaker_n_e_t_1_1_gen_api.html#a53d6f8ccb0015ea020228de41cfd2162a2ddabc33a6100ceb5311697534035d8d", null ],
+      [ "Expert", "namespace_spinnaker_n_e_t_1_1_gen_api.html#a53d6f8ccb0015ea020228de41cfd2162a0b84df4e0b66e9d55b22eefb55ca928f", null ],
+      [ "Guru", "namespace_spinnaker_n_e_t_1_1_gen_api.html#a53d6f8ccb0015ea020228de41cfd2162a45d909a817398ff956eb79ff1146c5e4", null ],
+      [ "Invisible", "namespace_spinnaker_n_e_t_1_1_gen_api.html#a53d6f8ccb0015ea020228de41cfd2162a8bcda43732b0928d269955e0f09ff76f", null ]
+    ] ],
+    [ "ConvertList", "namespace_spinnaker_n_e_t_1_1_gen_api.html#a2a642bb6a8d99c051dbcb6a9e2c4a8ea", null ],
+    [ "ConvertNode", "namespace_spinnaker_n_e_t_1_1_gen_api.html#a19ec98d251dad41230d4b3bc29d7816e", null ],
+    [ "NodeEventHandler", "namespace_spinnaker_n_e_t_1_1_gen_api.html#a931ab460af421f54713931dd48a21e8c", null ]
+];

@@ -1,0 +1,28 @@
+var class_c_spinnaker_m_f_c_doc =
+[
+    [ "CSpinnakerMFCDoc", "class_c_spinnaker_m_f_c_doc.html#a2863255fa4132bfdbe4cc85040e924e7", null ],
+    [ "~CSpinnakerMFCDoc", "class_c_spinnaker_m_f_c_doc.html#a5e75927b519a022b864df746511c5f02", null ],
+    [ "DoGrabLoop", "class_c_spinnaker_m_f_c_doc.html#a008c176c789de6f5aee8a1d8777c0d88", null ],
+    [ "GetImageSize", "class_c_spinnaker_m_f_c_doc.html#a662f68156aefbb85f186bf496f949763", null ],
+    [ "GetProcessedFrameRate", "class_c_spinnaker_m_f_c_doc.html#a6f4571891f524c87ebd8ec3e8d3ff218", null ],
+    [ "GetProcessedPixels", "class_c_spinnaker_m_f_c_doc.html#a3310c4f351076984b326c117864c20a9", null ],
+    [ "InitBitmapStruct", "class_c_spinnaker_m_f_c_doc.html#ae4d5289f73f98e7dc5c8a6d67d89974e", null ],
+    [ "OnCloseDocument", "class_c_spinnaker_m_f_c_doc.html#ad8d6a7dc90feba6ac7156c91e67cab20", null ],
+    [ "OnFileSaveAs", "class_c_spinnaker_m_f_c_doc.html#a037de4a6da42e1a1ab6f4e63316644b3", null ],
+    [ "OnNewDocument", "class_c_spinnaker_m_f_c_doc.html#a3cdb233f7bba64f23641579f9acd72b9", null ],
+    [ "OnToggleCameraControl", "class_c_spinnaker_m_f_c_doc.html#a88b40fd93a7d0d7f63b51ea99a72730f", null ],
+    [ "RedrawAllViews", "class_c_spinnaker_m_f_c_doc.html#ab4b080483903843f9b18071a9907770e", null ],
+    [ "ThreadGrabImage", "class_c_spinnaker_m_f_c_doc.html#aabf61c98e7097a05d29b6fdac5a716f5", null ],
+    [ "m_beingSaved", "class_c_spinnaker_m_f_c_doc.html#a9d5d417c5c4e2432cd49effd1d83d4ac", null ],
+    [ "m_bitmapInfo", "class_c_spinnaker_m_f_c_doc.html#a76afd0631feead380d8f416643337763", null ],
+    [ "m_continueGrabThread", "class_c_spinnaker_m_f_c_doc.html#af18574d5dfef16b2c9dddb79c74709d7", null ],
+    [ "m_csData", "class_c_spinnaker_m_f_c_doc.html#ab8d1ef1c0540732f4cb1fb67213d2513", null ],
+    [ "m_heventThreadDone", "class_c_spinnaker_m_f_c_doc.html#add32ed428ae873b823875d24fead4088", null ],
+    [ "m_pCamera", "class_c_spinnaker_m_f_c_doc.html#ae43fe28e14b101bf83dcbfe51a48a7b8", null ],
+    [ "m_pCamSelWnd", "class_c_spinnaker_m_f_c_doc.html#a95745fcf21acadc446d0df354390c164", null ],
+    [ "m_pGridWnd", "class_c_spinnaker_m_f_c_doc.html#aa2083a0dabad137832daa495ac0f054a", null ],
+    [ "m_processedFrameRate", "class_c_spinnaker_m_f_c_doc.html#ac5d939cd9dec73eed2d2f5b70e7ee578", null ],
+    [ "m_processedImage", "class_c_spinnaker_m_f_c_doc.html#a23368aa3d0d9dd8113694a13046730a7", null ],
+    [ "m_processor", "class_c_spinnaker_m_f_c_doc.html#aee23fcaff47f1324d5984a7e500f5c1c", null ],
+    [ "m_saveImage", "class_c_spinnaker_m_f_c_doc.html#ab9b4f587ee404353ad5fb479ce49426f", null ]
+];

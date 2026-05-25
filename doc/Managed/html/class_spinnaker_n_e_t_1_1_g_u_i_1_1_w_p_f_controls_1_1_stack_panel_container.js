@@ -1,0 +1,26 @@
+var class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container =
+[
+    [ "StackPanelContainer", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#a7d2e2e88133e0cbd114ed77b9a0d1f41", null ],
+    [ "Connect", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#a9e8ca71a642326d48ee7e056e3e53ade", null ],
+    [ "Disconnect", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#ae2d4c211a9be192d59eae64144b2ca00", null ],
+    [ "GetBorderVisibility", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#a0bf059272bb9ea786df0f3292d47d13c", null ],
+    [ "GetNameLabelVisibility", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#ad0dd6c4fde4121be097057bf015e4c89", null ],
+    [ "GetNodeToControl", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#a89b32e46881beaf409d7c6fbaa425220", null ],
+    [ "GetRefreshTime", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#a6ff243da8f72433932f6ec0155029587", null ],
+    [ "GetToolTip", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#ac8ecc29d1f5ee51baa6a60e332322c11", null ],
+    [ "PopulateStackPanel", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#a8a903bf40b32919beeb60d027ea4872b", null ],
+    [ "Refresh", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#a3056ff926528b94b606ba7e8617dda3d", null ],
+    [ "SetBorderVisibility", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#ac11db131b96a0c84a12c7946cdb4de79", null ],
+    [ "SetControlNameLabel", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#a4881cb463603b8419244e0cc4cdf1272", null ],
+    [ "SetNameLabelVisibility", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#acced02a37b7af0d7d86242e59b7428fb", null ],
+    [ "SetToolTip", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#a4055e47168ec6c7403bbcfcc476e5900", null ],
+    [ "CellHorizontalAlignmentStringList", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#a39b48f8a514de99946430587cfa5b464", null ],
+    [ "CellVerticalAlignmentStringList", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#a1dd83186f15da970da3e31d6c24ba553", null ],
+    [ "ChildrenStringList", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#a775fa2455d3e07d01bc63a094b58c45a", null ],
+    [ "ControlNameLabel", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#a0410faf7a7984d6ce2d050df63541d56", null ],
+    [ "IsComplete", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#a00d466533b619869c824bd5f4f5c3093", null ],
+    [ "LayoutOrientation", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#a440789d3c0ef3ebeb00b3cbcda462da0", null ],
+    [ "NameLabelBoldness", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#a008ce562bb450339265608dc7ecae145", null ],
+    [ "NumberOfChildren", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#a676d4e058f53c4ce38b01e3842235c5d", null ],
+    [ "ShowBorder", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_stack_panel_container.html#ada7106bbe8e39b024636bf0c592b425a", null ]
+];

@@ -1,0 +1,5 @@
+var searchData=
+[
+  ['_5f_5fpad0_5f_5f_0',['__pad0__',['../class_spinnaker_n_e_t_1_1_managed_camera_base.html#a1925aa93c315d2c88349e8de52961945',1,'SpinnakerNET::ManagedCameraBase::__pad0__'],['../class_spinnaker_n_e_t_1_1_managed_chunk_data.html#a1925aa93c315d2c88349e8de52961945',1,'SpinnakerNET::ManagedChunkData::__pad0__'],['../class_spinnaker_n_e_t_1_1abstract.html#a1925aa93c315d2c88349e8de52961945',1,'SpinnakerNET::abstract::__pad0__'],['../class_spinnaker_n_e_t_1_1_managed_image_statistics.html#a1925aa93c315d2c88349e8de52961945',1,'SpinnakerNET::ManagedImageStatistics::__pad0__'],['../struct_spinnaker_n_e_t_1_1_managed_inference_bounding_box.html#a1925aa93c315d2c88349e8de52961945',1,'SpinnakerNET::ManagedInferenceBoundingBox::__pad0__'],['../class_spinnaker_n_e_t_1_1_managed_inference_bounding_box_result.html#a1925aa93c315d2c88349e8de52961945',1,'SpinnakerNET::ManagedInferenceBoundingBoxResult::__pad0__']]],
+  ['_5ferrortextlabel_1',['_ErrorTextLabel',['../class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_image_drawing_control.html#a1d3e05af4b47cf74123d50cbea0aeed3',1,'SpinnakerNET::GUI::WPFControls::ImageDrawingControl']]]
+];

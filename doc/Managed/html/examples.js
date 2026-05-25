@@ -1,0 +1,25 @@
+var examples =
+[
+    [ "Acquisition_CSharp.cs", "_acquisition__c_sharp_8cs-example.html", null ],
+    [ "AcquisitionMultipleCamera_CSharp.cs", "_acquisition_multiple_camera__c_sharp_8cs-example.html", null ],
+    [ "AcquisitionMultipleThread_CSharp.cs", "_acquisition_multiple_thread__c_sharp_8cs-example.html", null ],
+    [ "AcquisitionUserBuffer.cs", "_acquisition_user_buffer_8cs-example.html", null ],
+    [ "BufferHandling.cs", "_buffer_handling_8cs-example.html", null ],
+    [ "CounterAndTimer_CSharp.cs", "_counter_and_timer__c_sharp_8cs-example.html", null ],
+    [ "EnumerationEvents_CSharp.cs", "_enumeration_events__c_sharp_8cs-example.html", null ],
+    [ "Exposure_CSharp.cs", "_exposure__c_sharp_8cs-example.html", null ],
+    [ "Exposure_CSharp_QuickSpin.cs", "_exposure__c_sharp__quick_spin_8cs-example.html", null ],
+    [ "ImageEvents_CSharp.cs", "_image_events__c_sharp_8cs-example.html", null ],
+    [ "ImageFormatControl_CSharp.cs", "_image_format_control__c_sharp_8cs-example.html", null ],
+    [ "ImageFormatControl_CSharp_QuickSpin.cs", "_image_format_control__c_sharp__quick_spin_8cs-example.html", null ],
+    [ "Inference_CSharp.cs", "_inference__c_sharp_8cs-example.html", null ],
+    [ "Logging_CSharp.cs", "_logging__c_sharp_8cs-example.html", null ],
+    [ "LookupTable_CSharp.cs", "_lookup_table__c_sharp_8cs-example.html", null ],
+    [ "NodeMapCallback_CSharp.cs", "_node_map_callback__c_sharp_8cs-example.html", null ],
+    [ "NodeMapInfo_CSharp.cs", "_node_map_info__c_sharp_8cs-example.html", null ],
+    [ "Polarization_CSharp.cs", "_polarization__c_sharp_8cs-example.html", null ],
+    [ "SaveToVideo_CSharp.cs", "_save_to_video__c_sharp_8cs-example.html", null ],
+    [ "Sequencer_CSharp.cs", "_sequencer__c_sharp_8cs-example.html", null ],
+    [ "Trigger_CSharp.cs", "_trigger__c_sharp_8cs-example.html", null ],
+    [ "Trigger_CSharp_QuickSpin.cs", "_trigger__c_sharp__quick_spin_8cs-example.html", null ]
+];

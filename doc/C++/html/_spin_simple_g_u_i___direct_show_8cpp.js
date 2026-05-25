@@ -1,0 +1,25 @@
+var _spin_simple_g_u_i___direct_show_8cpp =
+[
+    [ "_WIN32_WINNT", "_spin_simple_g_u_i___direct_show_8cpp.html#ac50762666aa00bd3a4308158510f1748", null ],
+    [ "CaptureVideo", "_spin_simple_g_u_i___direct_show_8cpp.html#a2e8144325e751d4158362ac5973fb6bb", null ],
+    [ "ChangePreviewState", "_spin_simple_g_u_i___direct_show_8cpp.html#a126f71b5c1017d59dda54c999bc15c23", null ],
+    [ "CloseInterfaces", "_spin_simple_g_u_i___direct_show_8cpp.html#a41abeda8e2e8aff94bcd94293d541043", null ],
+    [ "FindCaptureDevice", "_spin_simple_g_u_i___direct_show_8cpp.html#aead92f96d44578dd5ec262caa1fe9bb4", null ],
+    [ "GetInterfaces", "_spin_simple_g_u_i___direct_show_8cpp.html#a0e69d61324caabf407dc359d70e32ade", null ],
+    [ "HandleGraphEvent", "_spin_simple_g_u_i___direct_show_8cpp.html#aa6321e54424233b100ec1df8dfca7a89", null ],
+    [ "MsgError", "_spin_simple_g_u_i___direct_show_8cpp.html#a2f10fef7418fef9cab423f22b2747ca4", null ],
+    [ "MsgInfo", "_spin_simple_g_u_i___direct_show_8cpp.html#a3e6d49c8df242f0757578d6230c567f8", null ],
+    [ "ResizeVideoWindow", "_spin_simple_g_u_i___direct_show_8cpp.html#a928a07022367579d1c4e7a6d49cdc9ff", null ],
+    [ "SetupCamera", "_spin_simple_g_u_i___direct_show_8cpp.html#af2f9da0db147b1acafb1902f53894f24", null ],
+    [ "SetupVideoWindow", "_spin_simple_g_u_i___direct_show_8cpp.html#a5ffc7fc70385081fb7091556c3deef2a", null ],
+    [ "WinMain", "_spin_simple_g_u_i___direct_show_8cpp.html#a65a88a1063e9fa27f22c96afd42a9037", null ],
+    [ "WndMainProc", "_spin_simple_g_u_i___direct_show_8cpp.html#a6b9a34db94e6327dbec0c320c8a3cb1b", null ],
+    [ "g_dwGraphRegister", "_spin_simple_g_u_i___direct_show_8cpp.html#a92a1fcea2479ec2d5f9eca6214f3f04c", null ],
+    [ "g_pCapture", "_spin_simple_g_u_i___direct_show_8cpp.html#a5e17f107cd1ea5b51f70335313aeb2f8", null ],
+    [ "g_pGraph", "_spin_simple_g_u_i___direct_show_8cpp.html#a6bd8d655646b4ba687c4ff7ffb80dc78", null ],
+    [ "g_pMC", "_spin_simple_g_u_i___direct_show_8cpp.html#af5999ae8c456640eaa14a79694e5d842", null ],
+    [ "g_pME", "_spin_simple_g_u_i___direct_show_8cpp.html#aa49abf511237bf2d1f42f504e78666e4", null ],
+    [ "g_psCurrent", "_spin_simple_g_u_i___direct_show_8cpp.html#a48681ee64f84e9b78f8cd293365d5227", null ],
+    [ "g_pVW", "_spin_simple_g_u_i___direct_show_8cpp.html#a222051b21000473aaf6bc0c9518d3644", null ],
+    [ "ghApp", "_spin_simple_g_u_i___direct_show_8cpp.html#a5109ad0d3fcd5f9615db2bed0b630d18", null ]
+];

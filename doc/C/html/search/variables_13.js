@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['u3vaccessprivilege_0',['U3VAccessPrivilege',['../structquick_spin.html#a29bc1e54818dad56a34282fa37480028',1,'quickSpin']]],
+  ['u3vcpcapability_1',['U3VCPCapability',['../structquick_spin.html#ac6c51e07eb166d1c8cedb6bccce6354a',1,'quickSpin']]],
+  ['u3vcpeirmavailable_2',['U3VCPEIRMAvailable',['../structquick_spin.html#a2ba946ecbb3ba14cb11fa38c20579775',1,'quickSpin']]],
+  ['u3vcpiidc2available_3',['U3VCPIIDC2Available',['../structquick_spin.html#ab76d6a67f0541bf88413551727a4af1e',1,'quickSpin']]],
+  ['u3vcpsirmavailable_4',['U3VCPSIRMAvailable',['../structquick_spin.html#aa8a58176c627e386e879cf6cca7fa1be',1,'quickSpin']]],
+  ['u3vcurrentspeed_5',['U3VCurrentSpeed',['../structquick_spin.html#a2bd1dfee2b466ad515085bbbfccf219b',1,'quickSpin']]],
+  ['u3vmaxacknowledgetransferlength_6',['U3VMaxAcknowledgeTransferLength',['../structquick_spin.html#a12aa6f29559a3eebfbf9dec975b32366',1,'quickSpin']]],
+  ['u3vmaxcommandtransferlength_7',['U3VMaxCommandTransferLength',['../structquick_spin.html#adad1e406c7eff64fe5924eebb10fb096',1,'quickSpin']]],
+  ['u3vmaxdeviceresponsetime_8',['U3VMaxDeviceResponseTime',['../structquick_spin.html#aacb655f269f71ae682849f7feecb902f',1,'quickSpin']]],
+  ['u3vmessagechannelid_9',['U3VMessageChannelID',['../structquick_spin.html#a74b6819abc3b5f6394f358276ff6dcec',1,'quickSpin']]],
+  ['u3vnumberofstreamchannels_10',['U3VNumberOfStreamChannels',['../structquick_spin.html#a5d8f79b1e65c511e6d13c9a76c71c163',1,'quickSpin']]],
+  ['u3vversionmajor_11',['U3VVersionMajor',['../structquick_spin.html#a53999e0deb4056af44d09031d6a314dc',1,'quickSpin']]],
+  ['u3vversionminor_12',['U3VVersionMinor',['../structquick_spin.html#a2dd7aed05ad30a51e32f63d3f7f969ec',1,'quickSpin']]],
+  ['uniquenessratio_13',['UniquenessRatio',['../structquick_spin.html#aebf51ecfabc68333f70aa850b568f1e4',1,'quickSpin']]],
+  ['usecustomframerate_14',['useCustomFrameRate',['../_save_to_video___c_8c.html#a5777d073c43b5074361fec501b6dcc8a',1,'SaveToVideo_C.c']]],
+  ['usemp4_15',['useMP4',['../structspin_h264_option.html#a2aaf64aaa96c8ba0b5edb0de4cbb858f',1,'spinH264Option']]],
+  ['useroutputselector_16',['UserOutputSelector',['../structquick_spin.html#a081f2325ada159ec9b02771783a1b52f',1,'quickSpin']]],
+  ['useroutputvalue_17',['UserOutputValue',['../structquick_spin.html#af39d265f58e92c7f88e645599801a753',1,'quickSpin']]],
+  ['useroutputvalueall_18',['UserOutputValueAll',['../structquick_spin.html#a04452c26c07923b5f9ee8c449dc3779a',1,'quickSpin']]],
+  ['useroutputvalueallmask_19',['UserOutputValueAllMask',['../structquick_spin.html#a72884ce76768616608c70a7ea2ce725d',1,'quickSpin']]],
+  ['usersetdefault_20',['UserSetDefault',['../structquick_spin.html#a6f557e9aed07fdf954fc7dfeb6fb0b42',1,'quickSpin']]],
+  ['usersetfeatureenable_21',['UserSetFeatureEnable',['../structquick_spin.html#aedea6964f3886df444d8a1e5dab15deb',1,'quickSpin']]],
+  ['usersetload_22',['UserSetLoad',['../structquick_spin.html#a946f012296f003cadfb4c1dda91f0242',1,'quickSpin']]],
+  ['usersetsave_23',['UserSetSave',['../structquick_spin.html#ad4911670765e22addcf1c7859af4da0d',1,'quickSpin']]],
+  ['usersetselector_24',['UserSetSelector',['../structquick_spin.html#ab9979e2c6d5e071c957d054c0cac0a62',1,'quickSpin']]]
+];

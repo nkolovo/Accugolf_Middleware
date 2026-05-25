@@ -1,0 +1,28 @@
+var examples =
+[
+    [ "Acquisition.cpp", "_acquisition_8cpp-example.html", null ],
+    [ "AcquisitionMultipleCameraRecovery.cpp", "_acquisition_multiple_camera_recovery_8cpp-example.html", null ],
+    [ "AcquisitionMultipleCamerasWriteToFile.cpp", "_acquisition_multiple_cameras_write_to_file_8cpp-example.html", null ],
+    [ "AcquisitionMultipleThread.cpp", "_acquisition_multiple_thread_8cpp-example.html", null ],
+    [ "AcquisitionUserBuffer.cpp", "_acquisition_user_buffer_8cpp-example.html", null ],
+    [ "BufferHandling.cpp", "_buffer_handling_8cpp-example.html", null ],
+    [ "Compression.cpp", "_compression_8cpp-example.html", null ],
+    [ "CounterAndTimer.cpp", "_counter_and_timer_8cpp-example.html", null ],
+    [ "Exposure.cpp", "_exposure_8cpp-example.html", null ],
+    [ "FileAccess_Quickspin.cpp", "_file_access__quickspin_8cpp-example.html", null ],
+    [ "GigEVisionPerformance.cpp", "_gig_e_vision_performance_8cpp-example.html", null ],
+    [ "ImageFormatControl.cpp", "_image_format_control_8cpp-example.html", null ],
+    [ "ImageFormatControl_QuickSpin.cpp", "_image_format_control__quick_spin_8cpp-example.html", null ],
+    [ "Inference.cpp", "_inference_8cpp-example.html", null ],
+    [ "LogicBlock.cpp", "_logic_block_8cpp-example.html", null ],
+    [ "NodeMapInfo.cpp", "_node_map_info_8cpp-example.html", null ],
+    [ "NodeMapInfo_QuickSpin.cpp", "_node_map_info__quick_spin_8cpp-example.html", null ],
+    [ "Polarization.cpp", "_polarization_8cpp-example.html", null ],
+    [ "SaveToVideo.cpp", "_save_to_video_8cpp-example.html", null ],
+    [ "SpinSimpleGUI_DirectShow.cpp", "_spin_simple_g_u_i__direct_show_8cpp-example.html", null ],
+    [ "StereoAcquisition.cpp", "_stereo_acquisition_8cpp-example.html", null ],
+    [ "StereoAcquisition_QuickSpin.cpp", "_stereo_acquisition__quick_spin_8cpp-example.html", null ],
+    [ "StereoGPIO.cpp", "_stereo_g_p_i_o_8cpp-example.html", null ],
+    [ "Trigger.cpp", "_trigger_8cpp-example.html", null ],
+    [ "Trigger_QuickSpin.cpp", "_trigger__quick_spin_8cpp-example.html", null ]
+];

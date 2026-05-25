@@ -1,0 +1,37 @@
+var class_spinnaker_pixel_correction_1_1_pixel_correction =
+[
+    [ "PixelCorrectionError", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#acd5db03260bb8e7f87ec3063381e622f", [
+      [ "NO_ERROR", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#acd5db03260bb8e7f87ec3063381e622fad306b6fdee05fe87455110ddf6501e6c", null ],
+      [ "INTERNAL_ERROR", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#acd5db03260bb8e7f87ec3063381e622fae8c0c70879b5895c615677261d64a1ee", null ],
+      [ "INTERNAL_ERROR_READING_NODES", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#acd5db03260bb8e7f87ec3063381e622fadfa121cdeb3a3bc5647461f795cd46e4", null ],
+      [ "GAIN_OUT_OF_RANGE", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#acd5db03260bb8e7f87ec3063381e622fab6731e4ff71e69da1cd80d54ab718b18", null ],
+      [ "EXPOSURE_OUT_OF_RANGE", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#acd5db03260bb8e7f87ec3063381e622fa2a83da24ed0b5497545f94641cb13fef", null ],
+      [ "TEMPERATURE_OUT_OF_RANGE", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#acd5db03260bb8e7f87ec3063381e622fa71d7bdc9fb900a1ee4b61b3bcc987a64", null ],
+      [ "THRESHOLD_OUT_OF_RANGE", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#acd5db03260bb8e7f87ec3063381e622fa01c8c02b160315737630cae880de5def", null ],
+      [ "X_COORDINATE_OUT_OF_RANGE", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#acd5db03260bb8e7f87ec3063381e622fac0643f35d7ff3d3771ce7d8b5010b71e", null ],
+      [ "Y_COORDINATE_OUT_OF_RANGE", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#acd5db03260bb8e7f87ec3063381e622fa11c56113b3efcc1eb76b151cc636dfe2", null ],
+      [ "PIXEL_SET_ALREADY_EXISTING", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#acd5db03260bb8e7f87ec3063381e622fa859cc6bed2c8d23a970b908377c507f7", null ],
+      [ "NO_DEFECTIVE_PIXELS_FOUND", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#acd5db03260bb8e7f87ec3063381e622fa6717b5206cfc18c4196faf2ad9b2a9e7", null ],
+      [ "LESS_THAN_255_DEFECTIVE_PIXELS_FOUND", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#acd5db03260bb8e7f87ec3063381e622fa98ae588fcb624acc69d39ce8d8e4ce40", null ],
+      [ "TOO_MANY_DEFECTIVE_PIXELS", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#acd5db03260bb8e7f87ec3063381e622fa32552a7e4cacb90f77bdb6fff21d94d5", null ]
+    ] ],
+    [ "Add", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#a751fb2a3bbec74ab7b2c150f7972d117", null ],
+    [ "ApplyThreshold", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#a18fca82fe3b5dac3c3072c94ce3f4641", null ],
+    [ "CorrectionApply", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#a571764d9ec3e362d54f344c533380fc2", null ],
+    [ "CorrectionMethod", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#a5a5b3d864824fd56fda3044d3017427a", null ],
+    [ "DefectTableSave", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#a74472be877e662796753dbd6432926a6", null ],
+    [ "GetAllPixelValues", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#a7f742e694718f29cd35c9e19051f4234", null ],
+    [ "Remove", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#a032d80ee34bbcc51a319d5661cc0ea9a", null ],
+    [ "Restore", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#aca88a90b3d5a9c387c03ef4691fc91f7", null ],
+    [ "validateParameters", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#a4446e99a883ea2e8e0df5e014e5a669e", null ],
+    [ "ExposureTime", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#a0368478bc0b45ef1e857b275486f7da5", null ],
+    [ "ExposureTimeDefault", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#aec9a8ab6c5e5f907083bed5a4498994d", null ],
+    [ "Gain", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#aa52d42d484a6e31fd603a08b367ccc3e", null ],
+    [ "GainDefault", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#acbbec64eca6405eb5941e9092381216e", null ],
+    [ "MaxPixelCount", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#a680639c7a544220e7c963fd663cb5344", null ],
+    [ "NumDefectPixel", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#a00a75f251cbf6344e1f517609019aaf2", null ],
+    [ "Temperature", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#aa4d8c8ca4e13151db6cd61c5bebb4f8a", null ],
+    [ "TemperatureDefault", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#a0c74f46641a8d92a3af0af29b1cafce8", null ],
+    [ "Threshold", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#adbeff44af29bbf8d58188a411c844b71", null ],
+    [ "ThresholdDefault", "class_spinnaker_pixel_correction_1_1_pixel_correction.html#ab16cd6132466150b0e69ac7b31defd0a", null ]
+];

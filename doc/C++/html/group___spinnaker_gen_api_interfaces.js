@@ -1,0 +1,27 @@
+var group___spinnaker_gen_api_interfaces =
+[
+    [ "IBase Interface", "group___base__h.html", "group___base__h" ],
+    [ "IBoolean Interface", "group___i_boolean__h.html", "group___i_boolean__h" ],
+    [ "ICategory Interfaces", "group___i_category__h.html", "group___i_category__h" ],
+    [ "IChunkPort Interface", "group___i_chunk_port__h.html", "group___i_chunk_port__h" ],
+    [ "ICommand Interface", "group___i_command__h.html", "group___i_command__h" ],
+    [ "IDestroy Interface", "group___i_destroy__h.html", "group___i_destroy__h" ],
+    [ "IDeviceInfo Interface", "group___i_device_info__h.html", "group___i_device_info__h" ],
+    [ "IEnumEntry Interface", "group___i_enum_entry__h.html", "group___i_enum_entry__h" ],
+    [ "IEnumeration Interface", "group___i_enumeration__h.html", "group___i_enumeration__h" ],
+    [ "IEnumerationT Interface", "group___i_enumeration_t__h.html", "group___i_enumeration_t__h" ],
+    [ "IFloat Interface", "group___i_float__h.html", "group___i_float__h" ],
+    [ "IInteger Interface", "group___i_integer__h.html", "group___i_integer__h" ],
+    [ "INode Interface", "group___i_node__h.html", "group___i_node__h" ],
+    [ "INodeMap Interface", "group___i_node_map__h.html", "group___i_node_map__h" ],
+    [ "INodeMapDyn Interface", "group___i_node_map_dyn__h.html", "group___i_node_map_dyn__h" ],
+    [ "IPort Interface", "group___i_port__h.html", "group___i_port__h" ],
+    [ "IPortConstruct Interface", "group___i_port_construct__h.html", "group___i_port_construct__h" ],
+    [ "IPortRecorder Interface", "group___i_port_recorder__h.html", "group___i_port_recorder__h" ],
+    [ "IRegister Interfaces", "group___i_register__h.html", "group___i_register__h" ],
+    [ "ISelector Interface", "group___i_selector__h.html", "group___i_selector__h" ],
+    [ "ISelectorDigit Interface", "group___i_selector_digit__h.html", "group___i_selector_digit__h" ],
+    [ "Reference Interfaces", "group___reference__h.html", "group___reference__h" ],
+    [ "CallbackHandleType", "group___spinnaker_gen_api_interfaces.html#ga9728ed43875d9cc070832309741a9cb2", null ],
+    [ "NodeList_t", "group___spinnaker_gen_api_interfaces.html#ga860f0cd4b01d15fdc7851da09d141bc9", null ]
+];

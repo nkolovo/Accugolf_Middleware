@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['imagecnt_0',['imageCnt',['../structuser_data.html#a71e61661deeb6a3e836b3e1f622b9b81',1,'userData']]],
+  ['imagecomponentenable_1',['ImageComponentEnable',['../structquick_spin.html#add051dc423c737578ecf27d695faa31c',1,'quickSpin']]],
+  ['imagecomponentselector_2',['ImageComponentSelector',['../structquick_spin.html#ae143cb2837081d4c1ef6e9279c1dc1e6',1,'quickSpin']]],
+  ['imagecompressionbitrate_3',['ImageCompressionBitrate',['../structquick_spin.html#af9f633ef3750c590e172bd75ceedddd6',1,'quickSpin']]],
+  ['imagecompressionjpegformatoption_4',['ImageCompressionJPEGFormatOption',['../structquick_spin.html#a7c66c7b1d05aac868dbc1ad02622285d',1,'quickSpin']]],
+  ['imagecompressionmode_5',['ImageCompressionMode',['../structquick_spin.html#a923262b1589f2026386c19369b1bd6bc',1,'quickSpin']]],
+  ['imagecompressionquality_6',['ImageCompressionQuality',['../structquick_spin.html#a4fdb88522008dcbf6cc205c11ea42127',1,'quickSpin']]],
+  ['imagecompressionrateoption_7',['ImageCompressionRateOption',['../structquick_spin.html#a0d249d33f7fb265901b8971acfbd1cb5',1,'quickSpin']]],
+  ['incompatibledevicecount_8',['IncompatibleDeviceCount',['../structquick_spin_t_l_interface.html#afd873bc89bf4a6989e667a8d5483567b',1,'quickSpinTLInterface']]],
+  ['incompatibledeviceid_9',['IncompatibleDeviceID',['../structquick_spin_t_l_interface.html#a6274e0eb784f4b63c5d782b8667a0736',1,'quickSpinTLInterface']]],
+  ['incompatibledevicemodelname_10',['IncompatibleDeviceModelName',['../structquick_spin_t_l_interface.html#a635da760b2bef60e2c6c6e4c03094da4',1,'quickSpinTLInterface']]],
+  ['incompatibledeviceselector_11',['IncompatibleDeviceSelector',['../structquick_spin_t_l_interface.html#a293013bd5a20c5b8b739cf4db92fae26',1,'quickSpinTLInterface']]],
+  ['incompatibledevicevendorname_12',['IncompatibleDeviceVendorName',['../structquick_spin_t_l_interface.html#a27b72ec81a20fc8c099c79dc3d6f2b7a',1,'quickSpinTLInterface']]],
+  ['incompatiblegevdeviceipaddress_13',['IncompatibleGevDeviceIPAddress',['../structquick_spin_t_l_interface.html#a6c0280b103e8ddbe4a2d0e39a6996b38',1,'quickSpinTLInterface']]],
+  ['incompatiblegevdevicemacaddress_14',['IncompatibleGevDeviceMACAddress',['../structquick_spin_t_l_interface.html#afdd68d098274e1bd081c7ac2d8f775a2',1,'quickSpinTLInterface']]],
+  ['incompatiblegevdevicesubnetmask_15',['IncompatibleGevDeviceSubnetMask',['../structquick_spin_t_l_interface.html#af13cbba352d0aff18fd0ffd3915ed0a9',1,'quickSpinTLInterface']]],
+  ['indexedcolor_5f8bit_16',['indexedColor_8bit',['../structspin_b_m_p_option.html#a54e6ea000e5a58b7166e80690eb305eb',1,'spinBMPOption']]],
+  ['interfacedisplayname_17',['InterfaceDisplayName',['../structquick_spin_t_l_interface.html#aa53c906fa5ee4f4b9ca63dcfc8b47cfc',1,'quickSpinTLInterface::InterfaceDisplayName'],['../structquick_spin_t_l_system.html#aa53c906fa5ee4f4b9ca63dcfc8b47cfc',1,'quickSpinTLSystem::InterfaceDisplayName']]],
+  ['interfaceid_18',['InterfaceID',['../structquick_spin_t_l_interface.html#a15674344a2a1b1d4de996f34b915742d',1,'quickSpinTLInterface::InterfaceID'],['../structquick_spin_t_l_system.html#a15674344a2a1b1d4de996f34b915742d',1,'quickSpinTLSystem::InterfaceID']]],
+  ['interfaceselector_19',['InterfaceSelector',['../structquick_spin_t_l_system.html#a24a8f6f2908fd5349a4985d782e280bb',1,'quickSpinTLSystem']]],
+  ['interfacetype_20',['InterfaceType',['../structquick_spin_t_l_interface.html#a4f7900ad83dc7a87890673cb20c2875a',1,'quickSpinTLInterface']]],
+  ['interfaceupdatelist_21',['InterfaceUpdateList',['../structquick_spin_t_l_system.html#aa29320ef211b5e45d1d22981f952c38a',1,'quickSpinTLSystem']]],
+  ['interlaced_22',['interlaced',['../structspin_p_n_g_option.html#a8d28971266d6f02000e28d29f6963c5f',1,'spinPNGOption']]],
+  ['ispenable_23',['IspEnable',['../structquick_spin.html#a051ab191858665d9ea896d97c486aaa8',1,'quickSpin']]]
+];

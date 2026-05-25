@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['_5f_5ferr_5f_5f_0',['__ERR__',['../_g_c_utilities_8h.html#a7c79ae1c490857295f076569f113fb6a',1,'GCUtilities.h']]],
+  ['_5f_5fline_5fstr_5f_5f_1',['__LINE_STR__',['../_g_c_utilities_8h.html#ae9d672c7a7b08e3f56b8854cfbe263e8',1,'GCUtilities.h']]],
+  ['_5f_5flocation_5f_5f_2',['__LOCATION__',['../_g_c_utilities_8h.html#acf9f64d9951202dae5be89b6e9aff7f0',1,'GCUtilities.h']]],
+  ['_5f_5foutput_5fformater_5f_5f_3',['__OUTPUT_FORMATER__',['../_g_c_utilities_8h.html#a085eb8a0a73df3936051f88437bbd428',1,'GCUtilities.h']]],
+  ['_5f_5fstdc_5fconstant_5fmacros_4',['__STDC_CONSTANT_MACROS',['../_g_c_types_8h.html#a786132414c30f947907be33a4c28125a',1,'GCTypes.h']]],
+  ['_5f_5fstdc_5flimit_5fmacros_5',['__STDC_LIMIT_MACROS',['../_g_c_types_8h.html#aeb7e7a856ab7a794b05b6b63ef36ea3e',1,'GCTypes.h']]],
+  ['_5f_5ftodo_5f_5f_6',['__TODO__',['../_g_c_utilities_8h.html#afc37610bb6992466dcb293b514345ca0',1,'GCUtilities.h']]],
+  ['_5f_5fwarn_5f_5f_7',['__WARN__',['../_g_c_utilities_8h.html#a9f9e09d6ed3f8eec6c6328b3006ccba6',1,'GCUtilities.h']]],
+  ['_5fafx_5fall_5fwarnings_8',['_AFX_ALL_WARNINGS',['../_spin_simple_g_u_i___m_f_c_2stdafx_8h.html#ab5fd5e01d3484ef3116a878a65b82980',1,'stdafx.h']]],
+  ['_5fatl_5fcstring_5fexplicit_5fconstructors_9',['_ATL_CSTRING_EXPLICIT_CONSTRUCTORS',['../_spin_simple_g_u_i___m_f_c_2stdafx_8h.html#a137e19a46f145129447af81af06def9f',1,'stdafx.h']]],
+  ['_5fcrt_5fsecure_5fno_5fwarnings_10',['_CRT_SECURE_NO_WARNINGS',['../_spin_simple_g_u_i___m_f_c_2stdafx_8h.html#af08ec37a8c99d747fb60fa15bc28678b',1,'stdafx.h']]],
+  ['_5fdefault_5fwindow_5fx_11',['_DEFAULT_WINDOW_X',['../_spinnaker_m_f_c_doc_8h.html#a224500cef1f75544e3f654ebfd6da97b',1,'SpinnakerMFCDoc.h']]],
+  ['_5fdefault_5fwindow_5fy_12',['_DEFAULT_WINDOW_Y',['../_spinnaker_m_f_c_doc_8h.html#a618133ccd6ed5444007b29919cbb9c4c',1,'SpinnakerMFCDoc.h']]],
+  ['_5fsecure_5fatl_13',['_SECURE_ATL',['../_spin_simple_g_u_i___m_f_c_2stdafx_8h.html#acc42367d17588c3836e65909335b5a8d',1,'stdafx.h']]],
+  ['_5fto_5fstring_14',['_TO_STRING',['../_g_c_utilities_8h.html#a4c870448817845ad954aa5f09c2b18fe',1,'GCUtilities.h']]],
+  ['_5fwin32_5fie_15',['_WIN32_IE',['../_spin_simple_g_u_i___m_f_c_2stdafx_8h.html#ad4562ce705fe4682e63dc8f1ea9dd344',1,'stdafx.h']]],
+  ['_5fwin32_5fwindows_16',['_WIN32_WINDOWS',['../_spin_simple_g_u_i___m_f_c_2stdafx_8h.html#a074ca98c073d899c62fc6629918186c8',1,'stdafx.h']]],
+  ['_5fwin32_5fwinnt_17',['_WIN32_WINNT',['../_spin_simple_g_u_i___direct_show_8cpp.html#ac50762666aa00bd3a4308158510f1748',1,'_WIN32_WINNT:&#160;SpinSimpleGUI_DirectShow.cpp'],['../_spin_simple_g_u_i___m_f_c_2stdafx_8h.html#ac50762666aa00bd3a4308158510f1748',1,'_WIN32_WINNT:&#160;stdafx.h']]]
+];

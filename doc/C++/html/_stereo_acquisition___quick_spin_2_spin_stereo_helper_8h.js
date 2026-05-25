@@ -1,0 +1,35 @@
+var _stereo_acquisition___quick_spin_2_spin_stereo_helper_8h =
+[
+    [ "NodeMapType", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#a226ae094bd6aa43d5fa6b1c2d1f60841", [
+      [ "NodeMapType_Camera", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#ga226ae094bd6aa43d5fa6b1c2d1f60841a7a527e962be9e62edfa06982f5cd8f1f", null ],
+      [ "NodeMapType_TLStream", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#ga226ae094bd6aa43d5fa6b1c2d1f60841a952026d26ccb40d611006f1fa7e94f4d", null ],
+      [ "NodeMapType_Camera", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#ga226ae094bd6aa43d5fa6b1c2d1f60841a7a527e962be9e62edfa06982f5cd8f1f", null ],
+      [ "NodeMapType_TLStream", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#ga226ae094bd6aa43d5fa6b1c2d1f60841a952026d26ccb40d611006f1fa7e94f4d", null ],
+      [ "NodeMapType_Camera", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#ga226ae094bd6aa43d5fa6b1c2d1f60841a7a527e962be9e62edfa06982f5cd8f1f", null ],
+      [ "NodeMapType_TLStream", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#ga226ae094bd6aa43d5fa6b1c2d1f60841a952026d26ccb40d611006f1fa7e94f4d", null ]
+    ] ],
+    [ "ConfigureAcquisition", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#aa9b81af59159b2024c4e8ebb6f046b16", null ],
+    [ "ConfigureCameraStreams", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#gaf77dd084eebb7cf2d5ba469b1a5d637c", null ],
+    [ "ConfigureGVCPHeartbeat", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#gaa8fe341ffd2151bc133255db6b069607", null ],
+    [ "ConfigureStereoProcessing", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#a21d1855dbd56dc36bbfba4d41fa3bb58", null ],
+    [ "DisableGVCPHeartbeat", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#ga0ba2326220d0bc2e23e04a6ada7c0b67", null ],
+    [ "GetLargePenalty", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#a57a79cfba700068ee7c509f7790c5287", null ],
+    [ "GetScan3dBaseLine", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#ga67a6cd9f6dd48d52fb0336d9d74dd640", null ],
+    [ "GetScan3dCoordinateOffset", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#acfb3906322d7ff98ec13e7703b8eb94f", null ],
+    [ "GetScan3dCoordinateScale", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#a58d02ff8797899047c3e64e9c4a863c9", null ],
+    [ "GetScan3dFocalLength", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#gae43a3759fcd6e7abe3293fb2fa393a10", null ],
+    [ "GetScan3dInvalidDataFlag", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#aecc81478aae51477e55d7b947e1eaf6a", null ],
+    [ "GetScan3dInvalidDataValue", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#a8e0369ed2d231b8c816b70ac8b1b2b54", null ],
+    [ "GetScan3dPrincipalPoint", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#ga80a36f035271a781daf255fed7976e18", null ],
+    [ "GetSmallPenalty", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#a5d047ad31d8b05cc78e098bf0de826e8", null ],
+    [ "GetTotalDisparity", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#a792b382fcbdc41f881221a35695f45fe", null ],
+    [ "GetUniquenessRatio", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#aa366949b6a7547fd1b7930d68fee67b0", null ],
+    [ "PrintCameraCalibrationParams", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#ga9c7e3600ac35fde5ce74bff46833dec7", null ],
+    [ "PrintDeviceInfo", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#ga226fb469f39c8700ad7912d4f2304c95", null ],
+    [ "PrintSGBM_params", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#ga323414c18266836edf0193c8b753d1e8", null ],
+    [ "ResetGVCPHeartbeat", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#ga8e68806a32f6cd05018777d2b6675009", null ],
+    [ "ResetGVCPHeartbeat", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#a491ca29aea60ee10d2672a1b0d8efe2d", null ],
+    [ "SetSGBM_params", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#gab94f79a944c8277166ed8358cf12ee4d", null ],
+    [ "SetStreamBufferHandlingMode", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#a2a9ed6a56228490b7b654ce3b9cc2863", null ],
+    [ "ValidateImageList", "_stereo_acquisition___quick_spin_2_spin_stereo_helper_8h.html#aa6e80b5d12eb71ae4d6312618b48a962", null ]
+];

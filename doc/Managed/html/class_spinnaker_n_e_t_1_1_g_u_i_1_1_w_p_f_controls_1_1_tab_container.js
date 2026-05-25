@@ -1,0 +1,26 @@
+var class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container =
+[
+    [ "TabContainer", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#a34dbb377e59ad6e97f0d84335880c0fe", null ],
+    [ "Connect", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#a9e8ca71a642326d48ee7e056e3e53ade", null ],
+    [ "Disconnect", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#ae2d4c211a9be192d59eae64144b2ca00", null ],
+    [ "GetControlNameLabel", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#ab1573615a842242eb916c3ee9514023b", null ],
+    [ "GetNameLabelBoldness", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#a9c25777ee6ed40d494be33f52110666a", null ],
+    [ "GetNameLabelVisibility", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#ad0dd6c4fde4121be097057bf015e4c89", null ],
+    [ "GetNodeToControl", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#a89b32e46881beaf409d7c6fbaa425220", null ],
+    [ "GetTabOrientation", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#a5c0f071502c0bfbf039b87bf96e7789d", null ],
+    [ "GetToolTip", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#ac8ecc29d1f5ee51baa6a60e332322c11", null ],
+    [ "PopulateTabContainer", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#a8bfaa80ccfa6328ef5d94d0cb70b7136", null ],
+    [ "Refresh", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#a3056ff926528b94b606ba7e8617dda3d", null ],
+    [ "SetControlNameLabel", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#a4881cb463603b8419244e0cc4cdf1272", null ],
+    [ "SetNameLabelBoldness", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#a845e6e23bf9afccb2c9f0499ce71c4b3", null ],
+    [ "SetNameLabelVisibility", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#acced02a37b7af0d7d86242e59b7428fb", null ],
+    [ "SetRefreshTime", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#abd88e50eacb80100ccf608cc85d0bf22", null ],
+    [ "SetTabOrientation", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#ae9097abfb040844d3d522842cd7e9e35", null ],
+    [ "SetToolTip", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#a4055e47168ec6c7403bbcfcc476e5900", null ],
+    [ "ChildrenIndexList", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#a05a3f447633304698ac1457d310e573b", null ],
+    [ "ChildrenStringList", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#a775fa2455d3e07d01bc63a094b58c45a", null ],
+    [ "ControlNameLabel", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#a0410faf7a7984d6ce2d050df63541d56", null ],
+    [ "IsComplete", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#a00d466533b619869c824bd5f4f5c3093", null ],
+    [ "TabNameList", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#ac95754382e4f25c578ccd18a5870b5fc", null ],
+    [ "TabOrientation", "class_spinnaker_n_e_t_1_1_g_u_i_1_1_w_p_f_controls_1_1_tab_container.html#a1d60dc2834ad753c3595d463df2e4dd6", null ]
+];

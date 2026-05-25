@@ -1,0 +1,25 @@
+var group___c_system =
+[
+    [ "spinSystemGetCameras", "group___c_system.html#gaa02ace2f887ab483c8fb0c956f80fdc5", null ],
+    [ "spinSystemGetCamerasEx", "group___c_system.html#ga273b02b094c330bd2324dc930770d6d6", null ],
+    [ "spinSystemGetInstance", "group___c_system.html#gae99b1840faddfefa4bfdfd55c43e7e89", null ],
+    [ "spinSystemGetInterfaces", "group___c_system.html#ga8304345289b2aec59481c82196669c30", null ],
+    [ "spinSystemGetLibraryVersion", "group___c_system.html#ga7248ecbdebbbef5937de92bb29018a3d", null ],
+    [ "spinSystemGetLoggingLevel", "group___c_system.html#ga6bb60a1348d03e77b8d53eab8d015bab", null ],
+    [ "spinSystemGetTLNodeMap", "group___c_system.html#ga331f5ef733859629e25b4b614c3f431e", null ],
+    [ "spinSystemIsInUse", "group___c_system.html#ga346299fc727ca7d2bbf176e3e3c86b8e", null ],
+    [ "spinSystemRegisterDeviceArrivalEventHandler", "group___c_system.html#ga4808b51f2c00416f783cdaaeedf0d281", null ],
+    [ "spinSystemRegisterDeviceRemovalEventHandler", "group___c_system.html#ga79c8e11b3d92d01dac87d300cf580784", null ],
+    [ "spinSystemRegisterInterfaceEventHandler", "group___c_system.html#ga52cded95819ca67a886649d2e39a1a51", null ],
+    [ "spinSystemRegisterLogEventHandler", "group___c_system.html#gab4d795622c731b28792b645e2fe7e475", null ],
+    [ "spinSystemReleaseInstance", "group___c_system.html#gab7fee02328eab0851be82e7b3663cb4f", null ],
+    [ "spinSystemSendActionCommand", "group___c_system.html#ga16df78d154e50161b782445035635533", null ],
+    [ "spinSystemSetLoggingLevel", "group___c_system.html#ga39c83aea3d9dc226857e462fa85b2509", null ],
+    [ "spinSystemUnregisterAllLogEventHandlers", "group___c_system.html#ga061307f6aa132ce40816fdb224251099", null ],
+    [ "spinSystemUnregisterDeviceArrivalEventHandler", "group___c_system.html#ga8d87afd41d3209567749fde063f4559d", null ],
+    [ "spinSystemUnregisterDeviceRemovalEventHandler", "group___c_system.html#ga30efb93494875c99789bef7fbcfe129d", null ],
+    [ "spinSystemUnregisterInterfaceEventHandler", "group___c_system.html#gac88afd18116d08b5a125ca421ad7e3a5", null ],
+    [ "spinSystemUnregisterLogEventHandler", "group___c_system.html#ga3c91463a906b9d070f438d27d13a063d", null ],
+    [ "spinSystemUpdateCameras", "group___c_system.html#ga862cdf47d20093f44fc4735b8501d127", null ],
+    [ "spinSystemUpdateCamerasEx", "group___c_system.html#ga5a45cd3befc8cb8086eb72f99cad339a", null ]
+];

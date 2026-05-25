@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['regiondestination_5fstream0_0',['RegionDestination_Stream0',['../group___camera_defs_c__h.html#gga915be9cac97eba08d5eab38faf31e357a15495328b11a7610dbb3ecc887368a4f',1,'CameraDefsC.h']]],
+  ['regiondestination_5fstream1_1',['RegionDestination_Stream1',['../group___camera_defs_c__h.html#gga915be9cac97eba08d5eab38faf31e357abdbb799a2cc5af54c1094de461ef3ff1',1,'CameraDefsC.h']]],
+  ['regiondestination_5fstream2_2',['RegionDestination_Stream2',['../group___camera_defs_c__h.html#gga915be9cac97eba08d5eab38faf31e357ac0c4187cb332ca6119362920ee0eea27',1,'CameraDefsC.h']]],
+  ['regionmode_5foff_3',['RegionMode_Off',['../group___camera_defs_c__h.html#gga34d74953643e59b9a6f97552acde36bba99dce7de34849a060b52fa6604e1161e',1,'CameraDefsC.h']]],
+  ['regionmode_5fon_4',['RegionMode_On',['../group___camera_defs_c__h.html#gga34d74953643e59b9a6f97552acde36bbaf19e550335eb9451cee2ace7c4126717',1,'CameraDefsC.h']]],
+  ['regionselector_5fall_5',['RegionSelector_All',['../group___camera_defs_c__h.html#gga639d15ae2072a33a16889542f6d6a558a7c6d2cac60c671d7a3b53e5028c16ccf',1,'CameraDefsC.h']]],
+  ['regionselector_5fregion0_6',['RegionSelector_Region0',['../group___camera_defs_c__h.html#gga639d15ae2072a33a16889542f6d6a558abf1609cf553a558e7de3b341bad7b4a5',1,'CameraDefsC.h']]],
+  ['regionselector_5fregion1_7',['RegionSelector_Region1',['../group___camera_defs_c__h.html#gga639d15ae2072a33a16889542f6d6a558a800468813f6eaa69aaa138c623c2c3f4',1,'CameraDefsC.h']]],
+  ['regionselector_5fregion2_8',['RegionSelector_Region2',['../group___camera_defs_c__h.html#gga639d15ae2072a33a16889542f6d6a558a525127da66ecf34deca341df5d49f3dc',1,'CameraDefsC.h']]],
+  ['registernode_9',['RegisterNode',['../group___spinnaker_gen_api_enums_c.html#ggad6f62f59b4339690774381c8e804fbe7a6b592367b538ef788288d5e9f56cb8b6',1,'SpinnakerGenApiDefsC.h']]],
+  ['rgbtransformlightsource_5fcloudy6500k_10',['RgbTransformLightSource_Cloudy6500K',['../group___camera_defs_c__h.html#ggab50f7613c376b021a881c2e49b2b7b47a2e6dd5449f0808d2e3bba1fd61e6a641',1,'CameraDefsC.h']]],
+  ['rgbtransformlightsource_5fcoolfluorescent4000k_11',['RgbTransformLightSource_CoolFluorescent4000K',['../group___camera_defs_c__h.html#ggab50f7613c376b021a881c2e49b2b7b47a51b561d08326896b9a5edfdfbdb76276',1,'CameraDefsC.h']]],
+  ['rgbtransformlightsource_5fcustom_12',['RgbTransformLightSource_Custom',['../group___camera_defs_c__h.html#ggab50f7613c376b021a881c2e49b2b7b47af1970e068fb7d3875e664aee389d025c',1,'CameraDefsC.h']]],
+  ['rgbtransformlightsource_5fdaylight5000k_13',['RgbTransformLightSource_Daylight5000K',['../group___camera_defs_c__h.html#ggab50f7613c376b021a881c2e49b2b7b47aec4df92c81b5885fb978786290241761',1,'CameraDefsC.h']]],
+  ['rgbtransformlightsource_5fgeneral_14',['RgbTransformLightSource_General',['../group___camera_defs_c__h.html#ggab50f7613c376b021a881c2e49b2b7b47aaeed37d821fdf79f7759c572411a2493',1,'CameraDefsC.h']]],
+  ['rgbtransformlightsource_5fshade8000k_15',['RgbTransformLightSource_Shade8000K',['../group___camera_defs_c__h.html#ggab50f7613c376b021a881c2e49b2b7b47a56a08271f873ed1b6242521c13a2b7b1',1,'CameraDefsC.h']]],
+  ['rgbtransformlightsource_5ftungsten2800k_16',['RgbTransformLightSource_Tungsten2800K',['../group___camera_defs_c__h.html#ggab50f7613c376b021a881c2e49b2b7b47ae24f8252047847bac32715c341df38cc',1,'CameraDefsC.h']]],
+  ['rgbtransformlightsource_5fwarmfluorescent3000k_17',['RgbTransformLightSource_WarmFluorescent3000K',['../group___camera_defs_c__h.html#ggab50f7613c376b021a881c2e49b2b7b47a00256086edf47250ce6715a4b681db78',1,'CameraDefsC.h']]],
+  ['ro_18',['RO',['../group___spinnaker_gen_api_enums_c.html#gga913d683ae49f523e2f28457023738caca42e9aa764b9ee7ecf7e668462de6f96d',1,'SpinnakerGenApiDefsC.h']]],
+  ['rw_19',['RW',['../group___spinnaker_gen_api_enums_c.html#gga913d683ae49f523e2f28457023738cacaec2497e0c8af01c04bec31ec0d1d7847',1,'SpinnakerGenApiDefsC.h']]]
+];

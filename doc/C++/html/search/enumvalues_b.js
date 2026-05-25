@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['macaddress_0',['MACAddress',['../group___types__h.html#gga80126f4fc65fa767d43218bdc25612b3ae14f04a1cfa7860531e991c16b6372e4',1,'Spinnaker::GenApi']]],
+  ['mjpg_1',['MJPG',['../_save_to_video_8cpp.html#ab6bf428ff193c18848f23e79d0082bbcaa40bf3124ac9b493bd9ff7115bd19e8b',1,'SaveToVideo.cpp']]],
+  ['multiroiconfigurationinvalidreason_5fboundx_2',['MultiRoiConfigurationInvalidReason_BoundX',['../group___camera_defs__h.html#gga344ccaa6323edf6894886346bb78f514a2722fb2ad6253c030434a3055118bddf',1,'Spinnaker']]],
+  ['multiroiconfigurationinvalidreason_5fboundy_3',['MultiRoiConfigurationInvalidReason_BoundY',['../group___camera_defs__h.html#gga344ccaa6323edf6894886346bb78f514a84a91bb2e9f41e20ebec4804b99e46d3',1,'Spinnaker']]],
+  ['multiroiconfigurationinvalidreason_5fminx_4',['MultiRoiConfigurationInvalidReason_MinX',['../group___camera_defs__h.html#gga344ccaa6323edf6894886346bb78f514a2203868542ec672cab0fb5da92e3d536',1,'Spinnaker']]],
+  ['multiroiconfigurationinvalidreason_5fminy_5',['MultiRoiConfigurationInvalidReason_MinY',['../group___camera_defs__h.html#gga344ccaa6323edf6894886346bb78f514afc1f52c17f376395307b1bdd73765a23',1,'Spinnaker']]],
+  ['multiroiconfigurationinvalidreason_5fnone_6',['MultiRoiConfigurationInvalidReason_None',['../group___camera_defs__h.html#gga344ccaa6323edf6894886346bb78f514a8f8c86a21263a407285af409b04cb477',1,'Spinnaker']]],
+  ['multiroiconfigurationinvalidreason_5foverlapx_7',['MultiRoiConfigurationInvalidReason_OverlapX',['../group___camera_defs__h.html#gga344ccaa6323edf6894886346bb78f514a0fb24d8b4b83219fa7bca2781ad00b46',1,'Spinnaker']]],
+  ['multiroiconfigurationinvalidreason_5foverlapy_8',['MultiRoiConfigurationInvalidReason_OverlapY',['../group___camera_defs__h.html#gga344ccaa6323edf6894886346bb78f514a520afb6849e4837aa05eef9aed2e0b5e',1,'Spinnaker']]],
+  ['multiroiconfigurationinvalidreason_5fsensorspecific_9',['MultiRoiConfigurationInvalidReason_SensorSpecific',['../group___camera_defs__h.html#gga344ccaa6323edf6894886346bb78f514a70b3c9bc4a0f28b29cc78b65705dc830',1,'Spinnaker']]],
+  ['multiroiselector_5froi0_10',['MultiRoiSelector_ROI0',['../group___camera_defs__h.html#gga720b89c9c0cb473c7b238fe3ab8831a0a6b4c6543012902ca9dd128d089f1b488',1,'Spinnaker']]],
+  ['multiroiselector_5froi1_11',['MultiRoiSelector_ROI1',['../group___camera_defs__h.html#gga720b89c9c0cb473c7b238fe3ab8831a0ab7d93637ed21cd40d8047202f7f491fc',1,'Spinnaker']]],
+  ['multiroiselector_5froi2_12',['MultiRoiSelector_ROI2',['../group___camera_defs__h.html#gga720b89c9c0cb473c7b238fe3ab8831a0a56ca3f8122dec97641cc6f862973d1c5',1,'Spinnaker']]],
+  ['multiroiselector_5froi3_13',['MultiRoiSelector_ROI3',['../group___camera_defs__h.html#gga720b89c9c0cb473c7b238fe3ab8831a0a05c0f8aea9aa3c0340ca5fd13eb5af4d',1,'Spinnaker']]],
+  ['multiroiselector_5froi4_14',['MultiRoiSelector_ROI4',['../group___camera_defs__h.html#gga720b89c9c0cb473c7b238fe3ab8831a0a08b1f1c46b64044d1390cf6b73d7951d',1,'Spinnaker']]],
+  ['multiroiselector_5froi5_15',['MultiRoiSelector_ROI5',['../group___camera_defs__h.html#gga720b89c9c0cb473c7b238fe3ab8831a0aa40f2c19f1f63acaf5c42bdf3d3d62f9',1,'Spinnaker']]],
+  ['multiroiselector_5froi6_16',['MultiRoiSelector_ROI6',['../group___camera_defs__h.html#gga720b89c9c0cb473c7b238fe3ab8831a0ad42d64d8b7149961acfa6513bfb3b232',1,'Spinnaker']]],
+  ['multiroiselector_5froi7_17',['MultiRoiSelector_ROI7',['../group___camera_defs__h.html#gga720b89c9c0cb473c7b238fe3ab8831a0ab1760c7a366d36bcb2d614a34ee04cbb',1,'Spinnaker']]]
+];
