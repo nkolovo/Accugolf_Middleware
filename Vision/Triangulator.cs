@@ -8,6 +8,7 @@
 // ------------------------------------------------------------
 using System;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
@@ -75,10 +76,14 @@ namespace SportSimulator.Vision
             using var h4  = new Mat();
             CvInvoke.TriangulatePoints(_P0!, _P1!, p0m, p1m, h4);
 
-            float w  = h4.GetValue(3, 0);
-            float X2 = h4.GetValue(0, 0) / w;
-            float Y2 = h4.GetValue(1, 0) / w;
-            float Z2 = h4.GetValue(2, 0) / w;
+            // TriangulatePoints outputs 4×N CV_32F when given CV_32F projection matrices.
+            // Use Matrix<float> with indexer for reliable reading.
+            using var dlt = new Matrix<float>(h4.Rows, h4.Cols);
+            h4.CopyTo(dlt.Mat);
+            float w  = dlt[3, 0];
+            float X2 = dlt[0, 0] / w;
+            float Y2 = dlt[1, 0] / w;
+            float Z2 = dlt[2, 0] / w;
 
             float diffZ = Math.Abs(Z1 - Z2);
             float avgX  = (X1 + X2) * 0.5f;
@@ -167,18 +172,24 @@ namespace SportSimulator.Vision
         public float DepthPrecisionMm(float Z_m) =>
             (float)(_baselineM > 0 ? (Z_m * Z_m * 1000f) / (_fx * _baselineM) : float.NaN);
 
-        private Mat PointToMat(PointF p)
+        // SetTo(float[]) treats the array as a scalar — only the first element is used.
+        // Matrix<float> with indexer is the reliable approach (same pattern as KalmanBallTracker).
+        private static Mat PointToMat(PointF p)
         {
-            var m = new Mat(2, 1, DepthType.Cv32F, 1);
-            m.SetTo(new[] { p.X, p.Y });
-            return m;
+            using var m = new Matrix<float>(2, 1);
+            m[0, 0] = p.X;
+            m[1, 0] = p.Y;
+            return m.Mat.Clone();
         }
 
-        private Mat ArrayToMat(double[] arr, int rows, int cols)
+        // TriangulatePoints requires CV_32F projection matrices — convert from double[].
+        private static Mat ArrayToMat(double[] arr, int rows, int cols)
         {
-            var m = new Mat(rows, cols, DepthType.Cv64F, 1);
-            m.SetTo(arr);
-            return m;
+            using var m = new Matrix<float>(rows, cols);
+            for (int i = 0; i < rows; i++)
+                for (int j = 0; j < cols; j++)
+                    m[i, j] = (float)arr[i * cols + j];
+            return m.Mat.Clone();
         }
     }
 }

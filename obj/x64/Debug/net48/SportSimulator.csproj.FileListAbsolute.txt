@@ -1,0 +1,8 @@
+C:\Users\nikol\Documents\GitHub\accugolfmiddleware\obj\x64\Debug\net48\SportSimulator.csproj.AssemblyReference.cache
+C:\Users\nikol\Documents\GitHub\accugolfmiddleware\obj\x64\Debug\net48\SportSimulator.csproj.SuggestedBindingRedirects.cache
+C:\Users\nikol\Documents\GitHub\accugolfmiddleware\obj\x64\Debug\net48\SportSimulator.exe.config
+C:\Users\nikol\Documents\GitHub\accugolfmiddleware\obj\x64\Debug\net48\SportSimulator.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\nikol\Documents\GitHub\accugolfmiddleware\obj\x64\Debug\net48\SportSimulator.AssemblyInfoInputs.cache
+C:\Users\nikol\Documents\GitHub\accugolfmiddleware\obj\x64\Debug\net48\SportSimulator.AssemblyInfo.cs
+C:\Users\nikol\Documents\GitHub\accugolfmiddleware\obj\x64\Debug\net48\SportSimulator.csproj.CoreCompileInputs.cache
+C:\Users\nikol\Documents\GitHub\accugolfmiddleware\obj\x64\Debug\net48\SportSimulator.sourcelink.json

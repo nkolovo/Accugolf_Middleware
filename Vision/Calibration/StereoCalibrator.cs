@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
@@ -91,9 +92,14 @@ namespace SportSimulator.Vision.Calibration
             var R  = new Mat(); var T  = new Mat();
             var E  = new Mat(); var F  = new Mat();
 
-            // Stereo calibration — fixes intrinsics from individual calibration then refines
+            // Emgu.CV 4.9: StereoCalibrate takes MCvPoint3D32f[][] and PointF[][]
+            // (not VectorOf* arrays from older versions)
+            var objArr  = _objPoints.Select(v => v.ToArray()).ToArray();
+            var pts0Arr = _imgPts0.Select(v => v.ToArray()).ToArray();
+            var pts1Arr = _imgPts1.Select(v => v.ToArray()).ToArray();
+
             double rms = CvInvoke.StereoCalibrate(
-                _objPoints.ToArray(), _imgPts0.ToArray(), _imgPts1.ToArray(),
+                objArr, pts0Arr, pts1Arr,
                 K0, D0, K1, D1, imgSize,
                 R, T, E, F,
                 CalibType.FixIntrinsic,
@@ -105,9 +111,13 @@ namespace SportSimulator.Vision.Calibration
             var R0 = new Mat(); var R1 = new Mat();
             var P0 = new Mat(); var P1 = new Mat();
             var Q  = new Mat();
+            // Emgu.CV 4.9: StereoRectify requires newImageSize + ref ROI rectangles
+            var roi0 = new System.Drawing.Rectangle();
+            var roi1 = new System.Drawing.Rectangle();
             CvInvoke.StereoRectify(K0, D0, K1, D1, imgSize, R, T,
                 R0, R1, P0, P1, Q,
-                StereoRectifyType.Default, alpha: 0);
+                StereoRectifyType.Default, 0.0, imgSize,
+                ref roi0, ref roi1);
 
             result = new StereoCalibrationData
             {

@@ -3,6 +3,7 @@
 // ------------------------------------------------------------
 using System;
 using SportSimulator.App;
+using SportSimulator.Vision;
 
 var unityIp   = args.Length > 0 ? args[0] : "127.0.0.1";
 var sendPort  = args.Length > 1 ? int.Parse(args[1]) : 7100;
@@ -13,7 +14,12 @@ Console.WriteLine($"Unity target : {unityIp}:{sendPort}");
 Console.WriteLine($"Listen port  : {listenPort}");
 Console.WriteLine("Press Ctrl+C to exit.\n");
 
-using var engine = new SimulatorEngine();
+#if NET48
+using var engine = new SimulatorEngine();          // real Spinnaker cameras
+#else
+Console.WriteLine("[WARNING] Running without Spinnaker SDK — MockCameraManager active.");
+using var engine = new SimulatorEngine(new MockCameraManager());
+#endif
 
 Console.CancelKeyPress += (_, e) => { e.Cancel = true; engine.Stop(); };
 

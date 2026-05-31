@@ -36,8 +36,9 @@ namespace SportSimulator.Vision.Calibration
             _map1X = new Mat(); _map1Y = new Mat();
 
             // InitUndistortRectifyMap produces fast integer+fractional lookup tables
-            CvInvoke.InitUndistortRectifyMap(K0, D0, R0, P0, imgSize, DepthType.Cv32F, _map0X, _map0Y);
-            CvInvoke.InitUndistortRectifyMap(K1, D1, R1, P1, imgSize, DepthType.Cv32F, _map1X, _map1Y);
+            // Emgu.CV 4.9: extra int parameter = number of channels for the output maps (1 = grayscale)
+            CvInvoke.InitUndistortRectifyMap(K0, D0, R0, P0, imgSize, DepthType.Cv32F, 1, _map0X, _map0Y);
+            CvInvoke.InitUndistortRectifyMap(K1, D1, R1, P1, imgSize, DepthType.Cv32F, 1, _map1X, _map1Y);
 
             IsReady = true;
         }

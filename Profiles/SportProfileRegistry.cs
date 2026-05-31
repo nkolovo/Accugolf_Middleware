@@ -1,6 +1,7 @@
 // ------------------------------------------------------------
 // Profiles/SportProfileRegistry.cs
 // ------------------------------------------------------------
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
@@ -88,9 +89,16 @@ namespace SportSimulator.Profiles
 
         private void LoadFromFile(string path)
         {
-            var json = File.ReadAllText(path);
-            var p = JsonSerializer.Deserialize<SportProfile>(json);
-            if (p != null) Register(p);
+            try
+            {
+                var json = File.ReadAllText(path);
+                var p = JsonSerializer.Deserialize<SportProfile>(json);
+                if (p != null) Register(p);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ProfileRegistry] Skipping '{path}': {ex.Message}");
+            }
         }
 
         public void Register(SportProfile p) => _profiles[p.SportId.ToLower()] = p;

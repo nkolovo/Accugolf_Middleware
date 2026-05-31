@@ -3,7 +3,6 @@
 // ------------------------------------------------------------
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using SportSimulator.Models;
 using SportSimulator.Profiles;
 using SportSimulator.Tracking;
@@ -15,15 +14,33 @@ namespace SportSimulator.App
 {
     public class SimulatorEngine : IDisposable
     {
-        private readonly CameraManager _cameras = new();
-        private readonly BallDetector  _detector = new();
+        private readonly ICameraManager    _cameras;
+        private readonly BallDetector      _detector = new();
         private readonly KalmanBallTracker _tracker = new();
         private readonly SportProfileRegistry _registry = new();
         private readonly StereoRectifier _rectifier = new();
         private readonly Triangulator    _triangulator = new();
 
+        /// <summary>
+        /// Production constructor — uses the real Spinnaker-backed CameraManager.
+        /// Only available on net48 (Spinnaker SDK is not present on net10.0).
+        /// </summary>
+#if NET48
+        public SimulatorEngine() : this(new CameraManager()) { }
+#endif
+
+        /// <summary>
+        /// Injection constructor — pass a MockCameraManager (or any ICameraManager)
+        /// for unit tests on machines without the Spinnaker SDK.
+        /// </summary>
+        public SimulatorEngine(ICameraManager cameras)
+        {
+            _cameras = cameras;
+            _activeProfile = _registry.GetOrDefault("soccer");
+        }
+
         private UdpTransport? _udp;
-        private SportProfile  _activeProfile;
+        private SportProfile  _activeProfile = null!; // set in constructor before use
         private bool _running;
 
         // Latest detection from each camera, keyed by camera index
@@ -44,11 +61,6 @@ namespace SportSimulator.App
         //   5. Aim for RMS reprojection error < 1.0px (< 0.5px is excellent)
         // Until this file exists, CreateDefaults() is used as a fallback.
         private const string CalibPath = "stereo_calibration.json";
-
-        public SimulatorEngine()
-        {
-            _activeProfile = _registry.GetOrDefault("soccer");
-        }
 
         public void Start(string unityIp = "127.0.0.1", int sendPort = 7100, int listenPort = 7101)
         {
@@ -158,7 +170,7 @@ namespace SportSimulator.App
                         X = kx, Y = ky, Z = kz,
                         Confidence = coastConf,
                         Tier       = TriangulationTier.KalmanOnly,
-                        TierReason = $"Coasting frame {_coastFrames}/{MaxKalmanCoastFrames}"
+                        TierReason = $"Coasting frame {_coastFrames}/{_maxCoastFrames}"
                     };
                 }
 

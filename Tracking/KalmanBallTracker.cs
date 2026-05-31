@@ -1,14 +1,27 @@
 // ------------------------------------------------------------
 // Tracking/KalmanBallTracker.cs
 // ------------------------------------------------------------
+// Simple 6-state Kalman: [x, y, z, vx, vy, vz]
+//
+// Emgu.CV 4.9 matrix-writing notes:
+//   Marshal.Copy to Mat.DataPointer does NOT reliably update KalmanFilter's
+//   internal matrices — the native KalmanFilter struct may hold its own
+//   pointers that differ from the managed Mat wrapper's DataPointer.
+//
+//   Reliable approaches:
+//     • Diagonal matrices  → CvInvoke.SetIdentity(mat, scalar)
+//     • Arbitrary matrices → build a Matrix<float> (has [r,c] indexer),
+//                            then call matrix.Mat.CopyTo(target)
+//     • Reading state      → copy to a Matrix<float> and read [r,c]
+// ------------------------------------------------------------
 using System;
 using Emgu.CV;
+using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using SportSimulator.Models;
 
 namespace SportSimulator.Tracking
 {
-    // Simple 6-state Kalman: [x, y, z, vx, vy, vz]
     public class KalmanBallTracker
     {
         private KalmanFilter? _kf;
@@ -16,13 +29,13 @@ namespace SportSimulator.Tracking
 
         public void Configure(SportProfile profile)
         {
-            _kf = new KalmanFilter(6, 3, 0, Emgu.CV.CvEnum.DepthType.Cv32F);
+            _kf = new KalmanFilter(6, 3, 0, DepthType.Cv32F);
             float q = profile.ProcessNoise;
             float r = profile.MeasurementNoise;
 
-            // Transition matrix (constant velocity model)
-            float dt = 1f / 120f; // assume 120 fps
-            var F = new float[,]
+            float dt = 1f / 120f; // constant-velocity model at 120 fps
+
+            SetMatrix(_kf.TransitionMatrix, new float[,]
             {
                 {1,0,0,dt,0,0},
                 {0,1,0,0,dt,0},
@@ -30,71 +43,76 @@ namespace SportSimulator.Tracking
                 {0,0,0,1,0,0},
                 {0,0,0,0,1,0},
                 {0,0,0,0,0,1}
-            };
-            SetMatrix(_kf.TransitionMatrix, F);
+            });
 
-            // Measurement matrix: observe x,y,z only
-            var H = new float[,]
+            SetMatrix(_kf.MeasurementMatrix, new float[,]
             {
                 {1,0,0,0,0,0},
                 {0,1,0,0,0,0},
                 {0,0,1,0,0,0}
-            };
-            SetMatrix(_kf.MeasurementMatrix, H);
+            });
 
-            SetIdentity(_kf.ProcessNoiseCov, q);
-            SetIdentity(_kf.MeasurementNoiseCov, r);
-            SetIdentity(_kf.ErrorCovPost, 1f);
+            // CvInvoke.SetIdentity is the reliable way to set diagonal Mats
+            CvInvoke.SetIdentity(_kf.ProcessNoiseCov,     new MCvScalar(q));
+            CvInvoke.SetIdentity(_kf.MeasurementNoiseCov, new MCvScalar(r));
+            CvInvoke.SetIdentity(_kf.ErrorCovPost,        new MCvScalar(1.0));
+
             _initialized = false;
         }
 
-        public (float x, float y, float z, float vx, float vy, float vz) Update(float mx, float my, float mz)
+        public (float x, float y, float z, float vx, float vy, float vz) Update(
+            float mx, float my, float mz)
         {
             if (_kf == null) return (mx, my, mz, 0, 0, 0);
 
             if (!_initialized)
             {
-                _kf.StatePost[0, 0] = mx;
-                _kf.StatePost[1, 0] = my;
-                _kf.StatePost[2, 0] = mz;
+                using var init = new Matrix<float>(6, 1);
+                init[0, 0] = mx; init[1, 0] = my; init[2, 0] = mz;
+                // vx, vy, vz stay at 0 (Matrix zeroed on construction)
+                init.Mat.CopyTo(_kf.StatePost);
                 _initialized = true;
             }
 
             _kf.Predict();
 
-            using var measurement = new Matrix<float>(3, 1);
-            measurement[0, 0] = mx; measurement[1, 0] = my; measurement[2, 0] = mz;
-            var state = _kf.Correct(measurement);
-            CacheState(state);
+            using var meas = new Matrix<float>(3, 1);
+            meas[0, 0] = mx; meas[1, 0] = my; meas[2, 0] = mz;
+
+            CacheState(_kf.Correct(meas.Mat));
             return LastState;
         }
 
-        // Predict-only step (Tier 4 coasting) — advances filter without a measurement
+        /// <summary>Predict-only step (Tier 4 coasting).</summary>
         public (float x, float y, float z, float vx, float vy, float vz) Predict()
         {
             if (_kf == null || !_initialized) return LastState;
-            var state = _kf.Predict();
-            CacheState(state);
+            CacheState(_kf.Predict());
             return LastState;
         }
 
-        public (float x, float y, float z, float vx, float vy, float vz) LastState { get; private set; }
+        public (float x, float y, float z, float vx, float vy, float vz) LastState
+        { get; private set; }
 
-        private void CacheState(Mat state) =>
-            LastState = (state[0,0], state[1,0], state[2,0],
-                         state[3,0], state[4,0], state[5,0]);
+        // ── Helpers ──────────────────────────────────────────────────────────
 
-        private void SetMatrix(Mat m, float[,] vals)
+        private void CacheState(Mat state)
         {
-            for (int r = 0; r < vals.GetLength(0); r++)
-                for (int c = 0; c < vals.GetLength(1); c++)
-                    m.SetValue(r, c, vals[r, c]);
+            // state is a 6x1 CV_32F Mat returned by Predict/Correct
+            using var m = new Matrix<float>(state.Rows, 1);
+            state.CopyTo(m.Mat);
+            LastState = (m[0,0], m[1,0], m[2,0], m[3,0], m[4,0], m[5,0]);
         }
 
-        private void SetIdentity(Mat m, float scale)
+        // Build a Matrix<float> from a 2-D array and copy it into a target Mat.
+        private static void SetMatrix(Mat target, float[,] vals)
         {
-            for (int i = 0; i < Math.Min(m.Rows, m.Cols); i++)
-                m.SetValue(i, i, scale);
+            int rows = vals.GetLength(0), cols = vals.GetLength(1);
+            using var m = new Matrix<float>(rows, cols);
+            for (int r = 0; r < rows; r++)
+                for (int c = 0; c < cols; c++)
+                    m[r, c] = vals[r, c];
+            m.Mat.CopyTo(target);
         }
     }
 }

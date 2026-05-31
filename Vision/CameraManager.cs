@@ -14,19 +14,9 @@ using SpinnakerNET.GenApi;
 
 namespace SportSimulator.Vision
 {
-    public class CameraFrame
-    {
-        public int CameraIndex { get; set; }
-        public byte[] Data { get; set; } = Array.Empty<byte>();
-        public int Width { get; set; }
-        public int Height { get; set; }
-        public long TimestampUs { get; set; }
-        // Chunk data extras (enabled below)
-        public double ExposureTimeUs { get; set; }
-        public double GainDb { get; set; }
-    }
+    // CameraFrame is defined in Vision/CameraFrame.cs
 
-    public class CameraManager : IDisposable
+    public class CameraManager : ICameraManager
     {
         private ManagedSystem? _system;
         private readonly List<ManagedCamera> _cameras = new();
