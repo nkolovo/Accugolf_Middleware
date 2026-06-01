@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "dgSpecHash": "mB1PR9BBc/Q=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\nikol\\Documents\\GitHub\\accugolfmiddleware\\Tests\\SportSimulator.Tests.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\nikol\\.nuget\\packages\\emgu.cv\\4.9.0.5494\\emgu.cv.4.9.0.5494.nupkg.sha512",
+    "C:\\Users\\nikol\\.nuget\\packages\\emgu.cv.runtime.windows\\4.9.0.5494\\emgu.cv.runtime.windows.4.9.0.5494.nupkg.sha512",
+    "C:\\Users\\nikol\\.nuget\\packages\\emgu.runtime.windows.msvc.rt.arm64\\19.39.33523\\emgu.runtime.windows.msvc.rt.arm64.19.39.33523.nupkg.sha512",
+    "C:\\Users\\nikol\\.nuget\\packages\\emgu.runtime.windows.msvc.rt.x64\\19.39.33523\\emgu.runtime.windows.msvc.rt.x64.19.39.33523.nupkg.sha512",
+    "C:\\Users\\nikol\\.nuget\\packages\\emgu.runtime.windows.msvc.rt.x86\\19.39.33523\\emgu.runtime.windows.msvc.rt.x86.19.39.33523.nupkg.sha512",
+    "C:\\Users\\nikol\\.nuget\\packages\\fluentassertions\\6.12.1\\fluentassertions.6.12.1.nupkg.sha512",
+    "C:\\Users\\nikol\\.nuget\\packages\\microsoft.codecoverage\\17.11.1\\microsoft.codecoverage.17.11.1.nupkg.sha512",
+    "C:\\Users\\nikol\\.nuget\\packages\\microsoft.net.test.sdk\\17.11.1\\microsoft.net.test.sdk.17.11.1.nupkg.sha512",
+    "C:\\Users\\nikol\\.nuget\\packages\\microsoft.testplatform.objectmodel\\17.11.1\\microsoft.testplatform.objectmodel.17.11.1.nupkg.sha512",
+    "C:\\Users\\nikol\\.nuget\\packages\\microsoft.testplatform.testhost\\17.11.1\\microsoft.testplatform.testhost.17.11.1.nupkg.sha512",
+    "C:\\Users\\nikol\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
+    "C:\\Users\\nikol\\.nuget\\packages\\system.configuration.configurationmanager\\4.4.0\\system.configuration.configurationmanager.4.4.0.nupkg.sha512",
+    "C:\\Users\\nikol\\.nuget\\packages\\system.security.cryptography.protecteddata\\4.4.0\\system.security.cryptography.protecteddata.4.4.0.nupkg.sha512",
+    "C:\\Users\\nikol\\.nuget\\packages\\xunit\\2.9.0\\xunit.2.9.0.nupkg.sha512",
+    "C:\\Users\\nikol\\.nuget\\packages\\xunit.abstractions\\2.0.3\\xunit.abstractions.2.0.3.nupkg.sha512",
+    "C:\\Users\\nikol\\.nuget\\packages\\xunit.analyzers\\1.15.0\\xunit.analyzers.1.15.0.nupkg.sha512",
+    "C:\\Users\\nikol\\.nuget\\packages\\xunit.assert\\2.9.0\\xunit.assert.2.9.0.nupkg.sha512",
+    "C:\\Users\\nikol\\.nuget\\packages\\xunit.core\\2.9.0\\xunit.core.2.9.0.nupkg.sha512",
+    "C:\\Users\\nikol\\.nuget\\packages\\xunit.extensibility.core\\2.9.0\\xunit.extensibility.core.2.9.0.nupkg.sha512",
+    "C:\\Users\\nikol\\.nuget\\packages\\xunit.extensibility.execution\\2.9.0\\xunit.extensibility.execution.2.9.0.nupkg.sha512",
+    "C:\\Users\\nikol\\.nuget\\packages\\xunit.runner.visualstudio\\2.8.2\\xunit.runner.visualstudio.2.8.2.nupkg.sha512"
+  ],
+  "logs": []
+}
