@@ -1260,24 +1260,32 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\nikol\\.nuget\\packages\\": {}
+    "C:\\Users\\John K\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\nikol\\Documents\\GitHub\\accugolfmiddleware\\Tests\\SportSimulator.Tests.csproj",
+      "projectUniqueName": "C:\\Users\\John K\\Documents\\GitHub\\Accugolf_Middleware\\Tests\\SportSimulator.Tests.csproj",
       "projectName": "SportSimulator.Tests",
-      "projectPath": "C:\\Users\\nikol\\Documents\\GitHub\\accugolfmiddleware\\Tests\\SportSimulator.Tests.csproj",
-      "packagesPath": "C:\\Users\\nikol\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\nikol\\Documents\\GitHub\\accugolfmiddleware\\Tests\\obj\\",
+      "projectPath": "C:\\Users\\John K\\Documents\\GitHub\\Accugolf_Middleware\\Tests\\SportSimulator.Tests.csproj",
+      "packagesPath": "C:\\Users\\John K\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\John K\\Documents\\GitHub\\Accugolf_Middleware\\Tests\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\nikol\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\John K\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net10.0-windows"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -1285,8 +1293,8 @@
           "framework": "net10.0-windows7.0",
           "targetAlias": "net10.0-windows",
           "projectReferences": {
-            "C:\\Users\\nikol\\Documents\\GitHub\\accugolfmiddleware\\SportSimulator.csproj": {
-              "projectPath": "C:\\Users\\nikol\\Documents\\GitHub\\accugolfmiddleware\\SportSimulator.csproj"
+            "C:\\Users\\John K\\Documents\\GitHub\\Accugolf_Middleware\\SportSimulator.csproj": {
+              "projectPath": "C:\\Users\\John K\\Documents\\GitHub\\Accugolf_Middleware\\SportSimulator.csproj"
             }
           }
         }
@@ -1343,7 +1351,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",

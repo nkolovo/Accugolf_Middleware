@@ -19,21 +19,23 @@
   </PropertyGroup>
 
   <!-- ── Spinnaker Managed SDK — net48 only ────────────────────────────────
-       SpinnakerNET.dll ships with the Spinnaker SDK installer.
-       Default install path on Windows (SDK 4.x):
-         C:\Program Files\FLIR Systems\Spinnaker\bin64\vs2015\
+       Confirmed installed at (SDK 4.2.0.83, Teledyne-branded installer):
+         C:\Program Files\Teledyne\Spinnaker\bin64\vs2015\
 
-       If your workstation installed to a different path, update the HintPath
-       below to match, then re-open the solution.
+       This install ships ONE managed assembly — SpinnakerNET_v140.dll —
+       whose assembly name is "SpinnakerNET_v140" (not "SpinnakerNET").
+       It contains BOTH the SpinnakerNET and SpinnakerNET.GenApi namespaces,
+       so a single <Reference> covers both `using` statements in the code
+       (older SDKs shipped these as two separate DLLs — this one doesn't).
+
+       If your workstation installed to a different path, set the
+       SpinnakerSDKDir MSBuild property (must end in a trailing backslash)
+       instead of editing this HintPath.
   ─────────────────────────────────────────────────────────────────────────-->
   <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
-    <Reference Include="SpinnakerNET">
-      <HintPath Condition="'$(SpinnakerSDKDir)' != ''">$(SpinnakerSDKDir)SpinnakerNET.dll</HintPath>
-      <HintPath Condition="'$(SpinnakerSDKDir)' == ''">C:\Program Files\FLIR Systems\Spinnaker\bin64\vs2015\SpinnakerNET.dll</HintPath>
-    </Reference>
-    <Reference Include="SpinnakerNET.GenApi">
-      <HintPath Condition="'$(SpinnakerSDKDir)' != ''">$(SpinnakerSDKDir)SpinnakerNET.GenApi.dll</HintPath>
-      <HintPath Condition="'$(SpinnakerSDKDir)' == ''">C:\Program Files\FLIR Systems\Spinnaker\bin64\vs2015\SpinnakerNET.GenApi.dll</HintPath>
+    <Reference Include="SpinnakerNET_v140">
+      <HintPath Condition="'$(SpinnakerSDKDir)' != ''">$(SpinnakerSDKDir)SpinnakerNET_v140.dll</HintPath>
+      <HintPath Condition="'$(SpinnakerSDKDir)' == ''">C:\Program Files\Teledyne\Spinnaker\bin64\vs2015\SpinnakerNET_v140.dll</HintPath>
     </Reference>
   </ItemGroup>
 

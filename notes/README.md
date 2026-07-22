@@ -76,6 +76,7 @@ See: [00-project-vision.md](00-project-vision.md)
 | 11 | [Unity Integration](11-unity-integration.md) | How to ship data from middleware → Unity |
 | 12 | [Implementation Roadmap](12-implementation-roadmap.md) | Suggested build order |
 | 13 | [Doc-Tree Map](13-sdk-doc-map.md) | Where to find specific reference pages in /doc |
+| 14 | [Session Recap: Hardware Bring-Up + 3D Spin](14-session-2026-07-22-hardware-bringup.md) | Confirmed hardware specs, bugs fixed, spin architecture — start here for a fresh session |
 
 ## How these notes are linked
 

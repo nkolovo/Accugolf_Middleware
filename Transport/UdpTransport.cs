@@ -24,6 +24,13 @@ namespace SportSimulator.Transport
             _unityEndpoint = new IPEndPoint(IPAddress.Parse(unityIp), sendPort);
             _sender = new UdpClient();
             _receiver = new UdpClient(listenPort);
+
+            // net48's UdpClient has no cancellable ReceiveAsync(CancellationToken)
+            // overload (added later in .NET). Closing the socket is the standard
+            // .NET Framework way to unblock a pending receive on shutdown — this
+            // works identically on both targets, so no #if split is needed.
+            _cts.Token.Register(() => _receiver.Close());
+
             Console.WriteLine($"[UDP] Sending to {unityIp}:{sendPort}, listening on :{listenPort}");
         }
 
@@ -41,7 +48,7 @@ namespace SportSimulator.Transport
                 {
                     try
                     {
-                        var result = await _receiver.ReceiveAsync(_cts.Token);
+                        var result = await _receiver.ReceiveAsync();
                         var (type, payload) = PacketSerializer.Deserialize(result.Buffer);
                         if (type == PacketType.ProfileCommand)
                         {
@@ -49,7 +56,9 @@ namespace SportSimulator.Transport
                             if (cmd != null) ProfileCommandReceived?.Invoke(cmd);
                         }
                     }
-                    catch (OperationCanceledException) { break; }
+                    // Dispose()/cancellation closes _receiver to unblock ReceiveAsync —
+                    // that surfaces as an exception here, not a clean cancellation.
+                    catch (Exception) when (_cts.IsCancellationRequested) { break; }
                     catch (Exception ex) { Console.WriteLine($"[UDP] Receive error: {ex.Message}"); }
                 }
             }, _cts.Token);

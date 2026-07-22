@@ -47,9 +47,10 @@ namespace SportSimulator.Tests
         [Fact]
         public void CreateDefaults_ImageDimensionsAreCorrect()
         {
+            // 720×540 confirmed on-site (Blackfly S BFS-PGE-04S2M, fixed resolution).
             var cal = StereoCalibrationData.CreateDefaults();
-            cal.ImageWidth.Should().Be(1280);
-            cal.ImageHeight.Should().Be(1024);
+            cal.ImageWidth.Should().Be(720);
+            cal.ImageHeight.Should().Be(540);
         }
 
         [Fact]
@@ -58,8 +59,20 @@ namespace SportSimulator.Tests
             var cal = StereoCalibrationData.CreateDefaults();
             double cx = cal.K0[2];
             double cy = cal.K0[5];
-            cx.Should().BeApproximately(640.0, 1.0, "cx should be half of image width");
-            cy.Should().BeApproximately(512.0, 1.0, "cy should be half of image height");
+            cx.Should().BeApproximately(360.0, 1.0, "cx should be half of image width");
+            cy.Should().BeApproximately(270.0, 1.0, "cy should be half of image height");
+        }
+
+        [Fact]
+        public void CreateDefaults_SquarePixelSensor_FxEqualsFy()
+        {
+            // For a square-pixel sensor (true of this camera and virtually all
+            // machine-vision sensors), fx and fy must be equal regardless of
+            // resolution/aspect ratio — aspect ratio only shifts cx/cy, not the
+            // fx/fy ratio. Regression test for a bug where fy was incorrectly
+            // scaled by (cy/cx).
+            var cal = StereoCalibrationData.CreateDefaults();
+            cal.K0[4].Should().BeApproximately(cal.K0[0], 0.001, "fy should equal fx for a square-pixel sensor");
         }
 
         [Fact]
@@ -128,7 +141,7 @@ namespace SportSimulator.Tests
                 cal.SaveToFile(path);
                 var text = File.ReadAllText(path);
                 text.Should().Contain("ImageWidth");
-                text.Should().Contain("1280");
+                text.Should().Contain("720");
             }
             finally
             {

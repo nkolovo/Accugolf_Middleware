@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SportSimulator.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a3ae9113dba27a4ea52c4661c1e4f457ab6c1de0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+aba2362804fa32796f4e523ab58fde8fdebfa40c")]
 [assembly: System.Reflection.AssemblyProductAttribute("SportSimulator.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SportSimulator.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

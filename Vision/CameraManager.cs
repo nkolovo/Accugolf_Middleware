@@ -40,38 +40,78 @@ namespace SportSimulator.Vision
             { "generic",  1000.0 }
         };
 
+        // Known serial → CameraIndex mapping for the AccuGolf Hawkeye rig.
+        // Spinnaker's raw enumeration order is NOT guaranteed to match physical
+        // left/right placement — confirmed on-site (2026-07-22) that it doesn't:
+        // enumeration put the RIGHT camera first. That matters because CameraIndex
+        // 0 = LEFT is assumed throughout this codebase's stereo math (disparity
+        // formula in Triangulator.cs, baseline sign in StereoCalibrationData.cs,
+        // "Camera 0 at -baseline/2" in MockCameraManager.cs). Getting this backwards
+        // makes every real detection look like it's behind the camera.
+        //
+        // ⚠️ HARDWARE TODO — update if a camera is ever swapped/replaced.
+        private static readonly Dictionary<string, int> SerialToCameraIndex = new()
+        {
+            { "24182871", 0 }, // left
+            { "24193779", 1 }, // right
+        };
+
         public void Initialize(string activeSportId = "generic")
         {
             _system = new ManagedSystem();
 
             var logger = new SpinnakerLogHandler();
-            _system.RegisterLoggingEvent(logger);
-            _system.SetLoggingEventPriorityLevel(SpinnakerNET.LoggingLevel.Warning);
+            _system.RegisterLoggingEventHandler(logger);
+            _system.SetLoggingEventPriorityLevel(ManagedLoggingLevel.LOG_LEVEL_WARN);
 
             var camList = _system.GetCameras();
             if (camList.Count == 0) throw new Exception("No Spinnaker cameras detected.");
 
-            // Enumerate using foreach (IList<IManagedCamera>) per guide
-            int idx = 0;
+            // Init every camera first, then place it by serial number into the
+            // slot the rest of the app expects — NOT by raw enumeration order.
+            var bySlot = new SortedDictionary<int, ManagedCamera>();
+            int nextFallbackSlot = 0;
             foreach (ManagedCamera cam in camList)
             {
                 try
                 {
                     cam.Init();
+                    string serial = cam.DeviceSerialNumber.Value;
+
+                    int slot;
+                    if (SerialToCameraIndex.TryGetValue(serial, out var known))
+                    {
+                        slot = known;
+                    }
+                    else
+                    {
+                        // Unknown serial — different/replaced hardware, or the map
+                        // above is stale. Fall back to enumeration order rather than
+                        // fail outright, but warn loudly: left/right may be swapped.
+                        slot = nextFallbackSlot;
+                        Console.WriteLine($"[CameraManager] WARNING: serial {serial} not in SerialToCameraIndex — " +
+                                           $"falling back to enumeration order for CameraIndex {slot}. Update the map above.");
+                    }
+                    nextFallbackSlot++;
+
+                    while (bySlot.ContainsKey(slot)) slot++; // guard against a mapping collision
+
                     ConfigureCamera(cam, activeSportId);
                     SetStreamBuffers(cam, count: 20); // guide default is 10; raise for burst
                     EnableChunkData(cam);
                     cam.AcquisitionMode.Value = AcquisitionModeEnums.Continuous.ToString();
                     cam.BeginAcquisition();
-                    _cameras.Add(cam);
-                    Console.WriteLine($"[CameraManager] Camera {idx} initialised.");
-                    idx++;
+
+                    bySlot[slot] = cam;
+                    Console.WriteLine($"[CameraManager] Camera serial {serial} → CameraIndex {slot}.");
                 }
                 catch (SpinnakerException ex)
                 {
-                    Console.WriteLine($"[CameraManager] Camera {idx} init failed: {ex.Message}");
+                    Console.WriteLine($"[CameraManager] Camera init failed: {ex.Message}");
                 }
             }
+
+            foreach (var kvp in bySlot) _cameras.Add(kvp.Value);
             Console.WriteLine($"[CameraManager] {_cameras.Count} camera(s) ready.");
         }
 
@@ -105,13 +145,31 @@ namespace SportSimulator.Vision
 
         private void ConfigureCamera(ManagedCamera cam, string sportId)
         {
-            // ⚠️ HARDWARE TODO — confirm PixelFormatEnums.Mono8 is supported by
-            // your FLIR model. Check SpinView → Format → Pixel Format.
-            // Mono8 is preferred for speed (1 byte/px vs 3 for colour).
-            // If your simulator uses colour cues for ball detection (e.g. yellow
-            // tennis ball), switch to BayerRG8 and update BallDetector accordingly.
+            // Confirmed on-site 2026-07-22: both cameras are Blackfly S
+            // BFS-PGE-04S2M, monochrome sensor (the "M" suffix) — Mono8 is the
+            // native format, not a color-sensor fallback. If your simulator ever
+            // needs color cues (e.g. a yellow tennis ball), you'd need a different
+            // camera model — this one has no Bayer color data to fall back to.
             try { cam.PixelFormat.Value = PixelFormatEnums.Mono8.ToString(); }
             catch (SpinnakerException) { /* camera may not support Mono8 */ }
+
+            // Force free-run acquisition regardless of the camera's persisted
+            // trigger config. SpinView reported TriggerSource=Software on-site,
+            // which is ambiguous by itself (TriggerSource is irrelevant if
+            // TriggerMode=Off, but if TriggerMode=On, GetNextImage() would block
+            // forever waiting for a software trigger this app never sends — the
+            // continuous free-run architecture throughout this engine needs
+            // TriggerMode explicitly Off, not just assumed).
+            try
+            {
+                cam.TriggerSelector.Value = TriggerSelectorEnums.FrameStart.ToString();
+                cam.TriggerMode.Value      = TriggerModeEnums.Off.ToString();
+            }
+            catch (SpinnakerException ex)
+            {
+                Console.WriteLine($"[CameraManager] TriggerMode warning: {ex.Message}");
+            }
+
             ApplyProfileToCamera(cam, sportId);
         }
 
@@ -132,7 +190,7 @@ namespace SportSimulator.Vision
         {
             try
             {
-                INodeMap sMap   = cam.GetStreamNodeMap();
+                INodeMap sMap   = cam.GetTLStreamNodeMap();
                 IInteger bufNode = sMap.GetNode<IInteger>("StreamDefaultBufferCount");
                 bufNode.Value   = count;
             }
@@ -200,7 +258,7 @@ namespace SportSimulator.Vision
                     FrameQueue.Add(new CameraFrame
                     {
                         CameraIndex    = idx,
-                        Data           = raw.GetData(),
+                        Data           = raw.ManagedData,
                         Width          = (int)raw.Width,
                         Height         = (int)raw.Height,
                         TimestampUs    = (long)(raw.TimeStamp / 1000),
@@ -230,7 +288,7 @@ namespace SportSimulator.Vision
     // Minimal logging handler (guide §Logging — 5 levels: Error/Warning/Notice/Info/Debug)
     internal class SpinnakerLogHandler : ManagedLoggingEventHandler
     {
-        public override void OnLogEvent(ManagedLoggingEvent e) =>
-            Console.WriteLine($"[Spinnaker/{e.Priority}] {e.Message}");
+        public override void OnLogEvent(ManagedLoggingEventData e) =>
+            Console.WriteLine($"[Spinnaker/{e.Level}] {e.Message}");
     }
 }

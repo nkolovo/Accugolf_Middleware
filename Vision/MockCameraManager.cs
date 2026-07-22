@@ -24,11 +24,12 @@ namespace SportSimulator.Vision
     {
         // ── Camera rig geometry ────────────────────────────────────────────────
         // Matches the defaults in StereoCalibrationData.CreateDefaults().
-        // Two cameras 700mm apart, each with a 1280×1024 sensor, 8mm focal length.
+        // Two cameras 495.3mm apart (19.5in measured), each with a 1280×1024
+        // sensor, 8mm focal length.
         private const int    SensorW        = 1280;
         private const int    SensorH        = 1024;
         private const float  FocalPx        = 1800f;   // ≈ 8mm lens at 4.8µm pitch
-        private const float  BaselineM      = 0.70f;   // metres between cameras
+        private const float  BaselineM      = 0.4953f; // metres between cameras (19.5in)
         private const float  CamHeightM     = 0.00f;   // cameras at origin height
         private const float  BallStartZ     = 0.0f;    // ball starts at camera plane
         private const float  BallStartX     = 0.0f;    // centred left-right
@@ -43,7 +44,9 @@ namespace SportSimulator.Vision
         private readonly Random _rng = new(42);  // seeded for reproducibility
 
         // ── Timing ────────────────────────────────────────────────────────────
-        private float _fps = 120f;
+        // Matches the real rig's confirmed default: SpinView reports 199.76fps
+        // full-frame (see KalmanBallTracker.cs). Reduced-ROI fps is still unmeasured.
+        private float _fps = 199.76f;
 
         public BlockingCollection<CameraFrame> FrameQueue { get; } = new(256);
 
@@ -54,7 +57,7 @@ namespace SportSimulator.Vision
 
         /// <summary>Configure the simulated ball launch.</summary>
         public void SetTrajectory(float speedMps = 30f, float launchAngleDeg = 15f,
-                                  float azimuthDeg = 0f, float fps = 120f,
+                                  float azimuthDeg = 0f, float fps = 199.76f,
                                   float positionNoisePx = 1.5f)
         {
             _speedMps        = speedMps;

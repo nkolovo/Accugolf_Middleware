@@ -63,10 +63,10 @@ namespace SportSimulator.Vision.Calibration
             CvInvoke.CornerSubPix(matR, cornersR, new Size(11,11), new Size(-1,-1), criteria);
 
             // Build object points (flat checkerboard in Z=0 plane)
-            var obj = new Point3D[_cornersX * _cornersY];
+            var obj = new (double X, double Y, double Z)[_cornersX * _cornersY];
             for (int r = 0; r < _cornersY; r++)
                 for (int c = 0; c < _cornersX; c++)
-                    obj[r * _cornersX + c] = new Point3D(c * _squareMm, r * _squareMm, 0);
+                    obj[r * _cornersX + c] = (c * _squareMm, r * _squareMm, 0);
 
             _objPoints.Add(new VectorOfPoint3D32F(Array.ConvertAll(obj,
                 p => new MCvPoint3D32f((float)p.X, (float)p.Y, (float)p.Z))));
@@ -145,7 +145,5 @@ namespace SportSimulator.Vision.Calibration
             m.CopyTo(arr);
             return arr;
         }
-
-        private record Point3D(double X, double Y, double Z);
     }
 }

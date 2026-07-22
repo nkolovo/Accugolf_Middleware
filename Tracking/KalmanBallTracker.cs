@@ -33,7 +33,10 @@ namespace SportSimulator.Tracking
             float q = profile.ProcessNoise;
             float r = profile.MeasurementNoise;
 
-            float dt = 1f / 120f; // constant-velocity model at 120 fps
+            // Confirmed on-site 2026-07-22: SpinView reports 199.76fps at default
+            // (full-frame) settings — reduced-ROI fps is still unmeasured, so this
+            // is the safe (lower-bound) assumption until that's checked.
+            float dt = 1f / 199.76f;
 
             SetMatrix(_kf.TransitionMatrix, new float[,]
             {
