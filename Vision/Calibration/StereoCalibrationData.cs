@@ -37,11 +37,46 @@ namespace SportSimulator.Vision.Calibration
         public int ImageWidth  { get; set; } = 720;
         public int ImageHeight { get; set; } = 540;
 
+        // World-mounting geometry: how the STEREO PAIR AS A WHOLE sits relative to
+        // the ground/tee, as opposed to R/T above (which only describe the two
+        // cameras' pose relative to EACH OTHER). Stereo calibration never produces
+        // this — it's a rig-installation fact, not a camera-intrinsic one — so it
+        // defaults to 0 (a level, untilted rig, i.e. no correction applied; see
+        // Triangulator's use of these). CreateDefaults() below fills in this rig's
+        // confirmed on-site values; a real calibration JSON without these fields
+        // deserializes to 0/0 (untitled) rather than silently applying a wrong tilt.
+        public double CameraHeightM        { get; set; } = 0.0;
+        public double CameraForwardOffsetM { get; set; } = 0.0;
+
         // --------------------------------------------------------
         // Defaults derived from on-site measurements (2026-07-22), NOT a real
         // calibration. REPLACE by running StereoCalibrator with a checkerboard —
         // see the class comment above.
         // --------------------------------------------------------
+        // Exposed so anything simulating this rig (MockCameraManager) can generate
+        // frames under the SAME camera model these defaults assume, instead of an
+        // independently-guessed resolution/focal-length that silently disagrees.
+        // A mismatch here doesn't throw — it just makes StereoRectifier's remap
+        // sample from the wrong place, which can wash out real disparity almost
+        // entirely (found live-testing the mock pipeline: true ~290px disparity at
+        // working distance measured as only ~4-5px after rectification).
+        public const int DefaultImageWidth  = 720;
+        public const int DefaultImageHeight = 540;
+        public const double DefaultMeasurementDistanceM = 3.015; // slant distance, camera to ball spot
+        public const double DefaultHalfWidthM = 0.6175;          // half of the measured 123.5cm floor width
+        public static double DefaultFx => (DefaultImageWidth / 2.0) / (DefaultHalfWidthM / DefaultMeasurementDistanceM);
+
+        // Confirmed on-site mounting geometry (notes/14-session-2026-07-22-hardware-
+        // bringup.md, "Mounting geometry" line): sensor 114in above the floor, 33in
+        // horizontally forward of the tee/ball spot, aimed at the tee, no yaw. Also
+        // referenced by MockCameraManager, which needs the SAME numbers to generate
+        // synthetic frames under a camera model consistent with what Triangulator
+        // assumes for its world-frame correction (see Triangulator.ToWorldFrame) —
+        // a mismatch here wouldn't throw, it would just make mock-tested trajectories
+        // silently disagree with what the real rig would report.
+        public const double DefaultCameraHeightM        = 2.8956; // 114in
+        public const double DefaultCameraForwardOffsetM = 0.8382; // 33in
+
         public static StereoCalibrationData CreateDefaults(double baselineMetres = 0.4953)
         {
             // Resolved on-site 2026-07-22:
@@ -64,17 +99,11 @@ namespace SportSimulator.Vision.Calibration
             // Once StereoCalibrator has been run and stereo_calibration.json exists,
             // these defaults are only used as a fallback if the JSON is missing.
 
-            const double MEASUREMENT_DISTANCE_M = 3.015; // slant distance, camera to ball spot
-            const double HALF_WIDTH_M = 0.6175;           // half of the measured 123.5cm floor width
-
-            const int IMAGE_WIDTH  = 720;
-            const int IMAGE_HEIGHT = 540;
-
-            double cx = IMAGE_WIDTH  / 2.0;
-            double cy = IMAGE_HEIGHT / 2.0;
+            double cx = DefaultImageWidth  / 2.0;
+            double cy = DefaultImageHeight / 2.0;
 
             // fx back-calculated from the FOV measurement (horizontal)
-            double fx = (IMAGE_WIDTH / 2.0) / (HALF_WIDTH_M / MEASUREMENT_DISTANCE_M);
+            double fx = DefaultFx;
 
             // fy = fx. For a square-pixel sensor (true of virtually all machine-vision
             // sensors, including this one), the pixel-to-radian conversion is identical
@@ -94,12 +123,25 @@ namespace SportSimulator.Vision.Calibration
             d.K1 = new[] { fx, 0, cx,  0, fy, cy,  0, 0, 1.0 };
             d.D1 = new[] { 0.0, 0.0, 0.0, 0.0, 0.0 };
 
-            // Extrinsics: cameras are side-by-side, right cam offset by baseline on X axis
+            // Extrinsics: cameras are side-by-side, right cam offset by baseline on X axis.
+            // Sign: OpenCV's stereo convention defines T such that a point in camera0's
+            // frame maps to camera1's frame via X1 = R*X0 + T. If camera1 (right) sits
+            // physically +baselineMetres to the right of camera0 (left) along X, then
+            // the SAME point expressed in camera1's frame has a SMALLER X — so T's X
+            // component must be NEGATIVE here. Verified empirically against this
+            // Emgu.CV/OpenCV build via CvInvoke.StereoRectify: a positive T here made
+            // Triangulator's standard `baseline = -P1[0,3]/P1[0,0]` formula come out
+            // negative, which poisoned every real-stereo Z (TriangulateStereo's avgZ
+            // range check rejected it) and silently fell back to Monocular's hardcoded
+            // (0,0,0) on every frame, real detections included.
             d.R = new[] { 1.0,0,0, 0,1.0,0, 0,0,1.0 }; // no rotation between cams
-            d.T = new[] { baselineMetres, 0.0, 0.0 };
+            d.T = new[] { -baselineMetres, 0.0, 0.0 };
 
-            d.ImageWidth  = IMAGE_WIDTH;
-            d.ImageHeight = IMAGE_HEIGHT;
+            d.ImageWidth  = DefaultImageWidth;
+            d.ImageHeight = DefaultImageHeight;
+
+            d.CameraHeightM        = DefaultCameraHeightM;
+            d.CameraForwardOffsetM = DefaultCameraForwardOffsetM;
 
             return d;
         }

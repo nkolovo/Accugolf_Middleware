@@ -46,6 +46,29 @@ namespace SportSimulator.Vision
         // frame, coast period, camera switch) isn't a "near-consecutive" pair.
         private const float MaxDtSeconds = 0.05f;
 
+        // No sport this rig actually outputs spin for gets remotely close to this —
+        // soccer tops out around 300–600rpm, a tumbling field-goal kick less than
+        // that (golf's much higher real spin is explicitly out of scope for this
+        // middleware). A reading anywhere near this ceiling is de-facto a bad
+        // point-correspondence fit, not real signal — natural-texture stereo
+        // matching can mismatch when the ball has several similar-looking patches
+        // close together (found via the mock's placeholder speckle texture:
+        // template matching between cameras can't always tell identical-looking
+        // dots apart, unlike a real ball's locally distinctive seams/panels — see
+        // MockCameraManager's _speckleOffsets comment). Reject rather than feed a
+        // physically-impossible spin into BallController's Magnus force — one bad
+        // ~5000rpm reading is enough to send the ball into a visible orbit.
+        //
+        // 1500 (the first value tried here) turned out too loose: readings around
+        // 1100–1474rpm with a flipping (+Y then -Y then +Y) axis got through as
+        // "plausible" and still visibly perturbed the trajectory mid-flight — every
+        // accepted reading is applied as a real Magnus force via BallController, so
+        // even a same-cycle sign flip on a merely-large (not absurd) reading reads
+        // as a sudden kink, not smooth orbiting. Soccer's real documented range
+        // here is ~300–600rpm; capping close to that leaves headroom for genuine
+        // variation without letting noise this size through.
+        private const float MaxPlausibleRpm = 700f;
+
         private readonly FeaturePointTracker _tracker = new();
         private readonly Triangulator _triangulator;
 
@@ -120,10 +143,13 @@ namespace SportSimulator.Vision
             var fit = RotationFitter.Fit(setA.ToArray(), setB.ToArray());
             if (!fit.Valid) return new Spin3DMeasurement { Valid = false };
 
+            float rpm = fit.AngleDeg / dt / 6f; // deg/s ÷ 6 = rpm, same formula as SpinEstimator
+            if (System.MathF.Abs(rpm) > MaxPlausibleRpm) return new Spin3DMeasurement { Valid = false };
+
             return new Spin3DMeasurement
             {
                 Valid      = true,
-                Rpm        = fit.AngleDeg / dt / 6f, // deg/s ÷ 6 = rpm, same formula as SpinEstimator
+                Rpm        = rpm,
                 AxisUnit   = fit.AxisUnit,
                 PointsUsed = setA.Count
             };

@@ -34,7 +34,7 @@ namespace SportSimulator.Tests
             // SimulatorEngine may call Predict() before the first detection arrives.
             // The tracker should return the default zero state without throwing.
             var tracker = MakeTracker();
-            var act = () => tracker.Predict();
+            var act = () => tracker.Predict(0);
 
             act.Should().NotThrow();
         }
@@ -43,7 +43,7 @@ namespace SportSimulator.Tests
         public void Predict_BeforeAnyUpdate_LastStateHasNoNaN()
         {
             var tracker = MakeTracker();
-            tracker.Predict();
+            tracker.Predict(0);
             var (x, y, z, vx, vy, vz) = tracker.LastState;
 
             float.IsNaN(x).Should().BeFalse();
@@ -58,12 +58,18 @@ namespace SportSimulator.Tests
         public void NegativeXVelocity_HasCorrectSign()
         {
             // Ball moving left (negative X) — Kalman velocity must be negative.
+            // Sits at rest first (see MinRestSamplesForConfidence's settling gate
+            // in KalmanBallTracker.Update) so the motion actually gets seeded,
+            // same as any real shot.
             var tracker = MakeTracker();
             float dt    = 1f / 120f;
             float vTrue = -10f;
+            const int restSamples = 5;
 
+            for (int i = 0; i < restSamples; i++)
+                tracker.Update(0f, 0f, 5f, (long)((i - restSamples) * dt * 1_000_000f));
             for (int i = 0; i < 60; i++)
-                tracker.Update(i * dt * vTrue, 0f, 5f);
+                tracker.Update(i * dt * vTrue, 0f, 5f, (long)(i * dt * 1_000_000f));
 
             var (_, _, _, vx, _, _) = tracker.LastState;
             vx.Should().BeLessThan(0f, "velocity must be negative for leftward motion");
@@ -72,13 +78,18 @@ namespace SportSimulator.Tests
         [Fact]
         public void NegativeZVelocity_HasCorrectSign()
         {
-            // Ball moving toward the cameras (negative Z) — uncommon but must not flip sign.
+            // Ball moving toward the cameras (negative Z) — uncommon but must not flip
+            // sign. Sits at rest first (see MinRestSamplesForConfidence's settling
+            // gate in KalmanBallTracker.Update) so the motion actually gets seeded.
             var tracker = MakeTracker();
             float dt    = 1f / 120f;
             float vTrue = -5f;
+            const int restSamples = 5;
 
+            for (int i = 0; i < restSamples; i++)
+                tracker.Update(0f, 0f, 5f, (long)((i - restSamples) * dt * 1_000_000f));
             for (int i = 0; i < 60; i++)
-                tracker.Update(0f, 0f, 5f + i * dt * vTrue);
+                tracker.Update(0f, 0f, 5f + i * dt * vTrue, (long)(i * dt * 1_000_000f));
 
             var (_, _, _, _, _, vz) = tracker.LastState;
             vz.Should().BeLessThan(0f);
@@ -87,12 +98,15 @@ namespace SportSimulator.Tests
         [Fact]
         public void StationaryBall_VelocityConvergesToZero()
         {
-            // A ball sitting still should eventually drive all velocity estimates to ~0.
-            // The constant-velocity Kalman converges slowly — 60 frames is enough for
-            // the velocity to be much closer to zero than the initial uncertainty.
+            // A ball that never moves never clears the rest-position settling gate
+            // (see KalmanBallTracker.Update / MinRestSamplesForConfidence) — it never
+            // seeds a velocity fix at all, so LastState just keeps reporting the
+            // measured rest position with the zero-velocity placeholder, which is
+            // exactly the right answer for a ball that's genuinely never moved.
             var tracker = MakeTracker();
+            float dt = 1f / 120f;
             for (int i = 0; i < 60; i++)
-                tracker.Update(1f, 2f, 3f);
+                tracker.Update(1f, 2f, 3f, (long)(i * dt * 1_000_000f));
 
             var (_, _, _, vx, vy, vz) = tracker.LastState;
             vx.Should().BeApproximately(0f, 0.5f);
@@ -105,9 +119,9 @@ namespace SportSimulator.Tests
         {
             // Alternating Predict / Update should not corrupt the filter state.
             var tracker = MakeTracker();
-            tracker.Update(0f, 0f, 1f);
-            tracker.Predict();
-            var act = () => tracker.Update(0.1f, 0f, 1.05f);
+            tracker.Update(0f, 0f, 1f, 0);
+            tracker.Predict(5006);
+            var act = () => tracker.Update(0.1f, 0f, 1.05f, 10012);
             act.Should().NotThrow();
         }
 
@@ -116,10 +130,10 @@ namespace SportSimulator.Tests
         {
             // LastState should reflect the most recent Predict or Update result.
             var tracker = MakeTracker();
-            tracker.Update(1f, 0f, 5f);
+            tracker.Update(1f, 0f, 5f, 0);
             var state1 = tracker.LastState;
 
-            tracker.Update(2f, 0f, 5f);
+            tracker.Update(2f, 0f, 5f, 5006);
             var state2 = tracker.LastState;
 
             state2.Should().NotBe(state1, "LastState must change after a new Update");

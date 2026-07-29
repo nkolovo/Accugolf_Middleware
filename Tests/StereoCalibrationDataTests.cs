@@ -26,8 +26,15 @@ namespace SportSimulator.Tests
         [Fact]
         public void CreateDefaults_BaselineStoredInT()
         {
+            // T is negative here by OpenCV convention (X1 = R*X0 + T maps left-camera
+            // points into the right camera's frame — a right camera physically further
+            // +X means points appear at a SMALLER X in its own frame) — see the class
+            // comment above CreateDefaults. Triangulator.Configure's standard
+            // `baseline = -P1[0,3]/P1[0,0]` formula depends on this sign; getting it
+            // backwards silently poisoned every real-stereo depth (see that class's
+            // comment on _baselineM).
             var cal = StereoCalibrationData.CreateDefaults(baselineMetres: 0.84);
-            cal.T[0].Should().BeApproximately(0.84, 0.0001);
+            cal.T[0].Should().BeApproximately(-0.84, 0.0001);
             cal.T[1].Should().BeApproximately(0.0, 0.0001, "T[1] should be zero (side-by-side rig)");
             cal.T[2].Should().BeApproximately(0.0, 0.0001, "T[2] should be zero (side-by-side rig)");
         }
@@ -40,7 +47,7 @@ namespace SportSimulator.Tests
         public void CreateDefaults_DifferentBaselines_AllProducePositiveFocalLength(double b)
         {
             var cal = StereoCalibrationData.CreateDefaults(b);
-            cal.T[0].Should().BeApproximately(b, 0.0001);
+            cal.T[0].Should().BeApproximately(-b, 0.0001, "T is negated baselineMetres — see CreateDefaults_BaselineStoredInT");
             cal.K0[0].Should().BeGreaterThan(0);
         }
 

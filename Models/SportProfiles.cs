@@ -16,6 +16,18 @@ namespace SportSimulator.Models
         // Detection tuning
         public int MinContourArea { get; set; }
         public int MaxContourArea { get; set; }
+
+        // Used by KalmanBallTracker's rest-position seeding to tell a real shot
+        // apart from the ball just being nudged/repositioned at address: the
+        // settling gate (MinRestSamplesForConfidence) only catches continuous
+        // motion that never stops, not a ball that sat still for a while and
+        // then got moved a few cm to adjust its placement. If the IMPLIED speed
+        // of a displacement (position delta / elapsed time) is below this, it's
+        // treated as a new candidate rest position instead of a shot. Set well
+        // below the sport's realistic slowest real shot, comfortably above a
+        // hand adjustment's speed — see SportProfileRegistry for per-sport
+        // values and the golf/putt caveat (a genuinely slow, deliberate shot can
+        // still be indistinguishable from a nudge by speed alone).
         public double MinSpeedMps { get; set; }
         public double MaxSpeedMps { get; set; }
         public bool UseInfrared { get; set; } = false;

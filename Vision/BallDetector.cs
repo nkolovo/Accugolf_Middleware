@@ -2,6 +2,7 @@
 // Vision/BallDetector.cs
 // ------------------------------------------------------------
 using System;
+using System.Collections.Generic;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
@@ -29,7 +30,17 @@ namespace SportSimulator.Vision
 
     public class BallDetector
     {
-        private Mat? _background;
+        // Keyed by CameraIndex: a single shared background Mat here (the original
+        // implementation) diffs whichever camera's frame arrives against a model
+        // that's really an alternating blend of BOTH cameras' distinct viewpoints —
+        // fine by coincidence for a dead-centered trajectory (both views similar
+        // enough that the blend is roughly harmless), but for any shot with real
+        // lateral motion the two views diverge enough to produce spurious
+        // near-identical "detections" in both cameras — background-subtraction
+        // ghosting, not the real ball. Found via a left-azimuth mock shot where
+        // triangulation was self-rejecting 100% of the time: the "ball" it was
+        // triangulating had a ~3px disparity implying a nonsensical Z of 254m.
+        private readonly Dictionary<int, Mat> _backgrounds = new();
         private SportProfile _profile = new();
 
         public void SetProfile(SportProfile p) => _profile = p;
@@ -39,15 +50,15 @@ namespace SportSimulator.Vision
             using var raw = new Mat(frame.Height, frame.Width, DepthType.Cv8U, 1);
             raw.SetTo(frame.Data);
 
-            // Background subtraction
-            if (_background == null)
+            // Background subtraction — per camera, not shared (see class comment).
+            if (!_backgrounds.TryGetValue(frame.CameraIndex, out var background))
             {
-                _background = raw.Clone();
+                _backgrounds[frame.CameraIndex] = raw.Clone();
                 return new DetectionResult { Found = false };
             }
 
             using var diff = new Mat();
-            CvInvoke.AbsDiff(raw, _background, diff);
+            CvInvoke.AbsDiff(raw, background, diff);
 
             // Gaussian blur + threshold
             using var blurred = new Mat();
@@ -72,9 +83,30 @@ namespace SportSimulator.Vision
                 double area = CvInvoke.ContourArea(contours[i]);
                 if (area < _profile.MinContourArea || area > _profile.MaxContourArea) continue;
 
-                var rect = CvInvoke.BoundingRectangle(contours[i]);
-                float cx = rect.X + rect.Width / 2f;
-                float cy = rect.Y + rect.Height / 2f;
+                // Image-moment centroid, not the bounding rectangle's center: rect.X
+                // and rect.Width are integers, so rect.X + rect.Width/2f can only ever
+                // land on half-pixel increments — it snaps to a coarse grid rather than
+                // measuring the contour's true center. Moments are area-weighted over
+                // the actual contour polygon, giving genuine sub-pixel accuracy (~0.1–
+                // 0.3px on a clean, well-contrasted blob like this one) instead of being
+                // capped at a 0.5px quantization step. This centroid feeds triangulation,
+                // the Kalman velocity fit, and Spin3D's point tracking — all three were
+                // inheriting this same coarse-quantization noise. Falls back to the old
+                // bounding-rect method only in the degenerate case of a zero-area moment
+                // (shouldn't happen given the MinContourArea check above already passed).
+                var moments = CvInvoke.Moments(contours[i], false);
+                float cx, cy;
+                if (moments.M00 > 1e-5)
+                {
+                    cx = (float)(moments.M10 / moments.M00);
+                    cy = (float)(moments.M01 / moments.M00);
+                }
+                else
+                {
+                    var rect = CvInvoke.BoundingRectangle(contours[i]);
+                    cx = rect.X + rect.Width / 2f;
+                    cy = rect.Y + rect.Height / 2f;
+                }
                 float r = MathF.Sqrt((float)area / MathF.PI);
 
                 // Circularity score (1.0 = perfect circle; lower for pucks)
@@ -99,8 +131,38 @@ namespace SportSimulator.Vision
                 }
             }
 
-            // Rolling background update
-            CvInvoke.AddWeighted(_background, 0.95, raw, 0.05, 0, _background);
+            // Rolling background update (this camera's own model only). Weight was
+            // 0.95/0.05 — background only catches up 5% toward the current frame
+            // per cycle, taking ~20 frames to "forget" any pixel the ball recently
+            // passed through. For a ball moving mostly in depth that ghost trail
+            // stays small and localized (found working fine for straight, azimuth=0
+            // shots). For a ball also sweeping laterally across the sensor, the
+            // trail elongates across many distinct pixel positions — morphological
+            // Close merges it into the ball's own contour, and the combined area
+            // grows every frame until it exceeds MaxContourArea and gets rejected
+            // entirely (found live: contour area climbing 5512->7868->...->10562px²
+            // over consecutive frames on a left-azimuth mock shot, well past
+            // soccer's 8000px² ceiling). Faster decay (0.7/0.3) keeps the trail short
+            // regardless of travel direction — a real, general improvement (any real
+            // ball crossing the frame instead of receding straight back would hit
+            // the same growth), not just a mock-testing tweak.
+            //
+            // Selective now, not unconditional: only refresh when NOTHING was found
+            // this frame. A ball sitting at address before the shot (always true on
+            // real hardware — the golfer takes a stance, sits the ball, THEN swings)
+            // would otherwise get slowly absorbed into the background at 30%/frame:
+            // ~97% blended in after just 10 identical frames, i.e. under 100ms at
+            // this rig's ~200fps. Found live via KalmanBallTracker's new rest-
+            // position seeding: with 10 resting frames before a shot, the very first
+            // real "moving" detection came back displaced by only ~4cm instead of
+            // the true ~36cm a real 18 m/s shot covers in that time — the ball had
+            // partially merged into its own background, corrupting the diffed
+            // contour's centroid right at the one moment detection quality matters
+            // most. Skipping the update on frames where a ball WAS found means the
+            // background only ever represents "empty scene", however long the ball
+            // sits still first.
+            if (!best.Found)
+                CvInvoke.AddWeighted(background, 0.7, raw, 0.3, 0, background);
 
             if (best.Found)
             {

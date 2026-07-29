@@ -48,10 +48,14 @@
   </ItemGroup>
 
   <!-- ── CameraManager uses SpinnakerNET — exclude from non-net48 builds ───
-       MockCameraManager and ICameraManager are always compiled.
+       MockCameraManager and ICameraManager are always compiled. CalibrationRunner
+       drives CameraManager directly (real cameras only — calibrating against the
+       mock's synthetic checkerboard-less frames wouldn't mean anything), so it's
+       excluded the same way.
   ─────────────────────────────────────────────────────────────────────────-->
   <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
     <Compile Remove="Vision\CameraManager.cs" />
+    <Compile Remove="App\CalibrationRunner.cs" />
   </ItemGroup>
 
   <!-- ── Emgu.CV (OpenCV wrapper — available on NuGet) ─────────────────────
