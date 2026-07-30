@@ -98,11 +98,18 @@ namespace SportSimulator.Vision.Calibration
             var pts0Arr = _imgPts0.Select(v => v.ToArray()).ToArray();
             var pts1Arr = _imgPts1.Select(v => v.ToArray()).ToArray();
 
+            // K0/D0/K1/D1 start empty — there's no separate single-camera
+            // calibration step feeding them a prior estimate, so CalibType.Default
+            // (jointly estimate intrinsics + extrinsics from these frame pairs) is
+            // required here. CalibType.FixIntrinsic (previously used) tells OpenCV
+            // to treat whatever's already in K0/D0/K1/D1 as correct and skip
+            // estimating them — with empty Mats that "fixes" garbage intrinsics
+            // and inflates RMS regardless of how much/varied the capture data is.
             double rms = CvInvoke.StereoCalibrate(
                 objArr, pts0Arr, pts1Arr,
                 K0, D0, K1, D1, imgSize,
                 R, T, E, F,
-                CalibType.FixIntrinsic,
+                CalibType.Default,
                 new MCvTermCriteria(100, 1e-5));
 
             Console.WriteLine($"[Calibrator] RMS reprojection error: {rms:F4} px");
