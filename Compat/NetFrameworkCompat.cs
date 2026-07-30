@@ -10,6 +10,16 @@
 // in the System namespace would collide. Call sites use
 // MathF.Max(min, MathF.Min(max, x)) instead, which works unchanged on both
 // targets.
+//
+// Only implements whatever methods call sites have actually needed so far —
+// NOT the full real MathF surface. Adding a new MathF.Whatever() call site
+// compiles fine on net10.0-windows (real System.MathF has everything) but
+// fails on net48 with "MathF does not contain a definition for Whatever"
+// unless it's added here too. Found live: Atan/Abs/Round were added to this
+// file only after a net48 build (on the actual hardware workstation, which
+// this dev environment can't compile-check at all — no Spinnaker SDK
+// installed here) failed on calls this session's mock-only testing had no
+// way to catch. If you add a new MathF call, add it here in the same pass.
 // ------------------------------------------------------------
 #if NET48
 namespace System
@@ -24,6 +34,9 @@ namespace System
         public static float Min(float a, float b) => Math.Min(a, b);
         public static float Cos(float x) => (float)Math.Cos(x);
         public static float Sin(float x) => (float)Math.Sin(x);
+        public static float Atan(float x) => (float)Math.Atan(x);
+        public static float Abs(float x) => Math.Abs(x);
+        public static float Round(float x) => (float)Math.Round(x);
     }
 }
 #endif
