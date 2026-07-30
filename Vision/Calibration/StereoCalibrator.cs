@@ -139,6 +139,38 @@ namespace SportSimulator.Vision.Calibration
             return m;
         }
 
+        /// <summary>
+        /// Diagnostic helper for --preview: runs the same corner search
+        /// AddFramePair does but only to draw the result and save it to disk —
+        /// doesn't affect calibration state. Lets you check focus/framing on
+        /// the actual sensor image instead of guessing from SpinView separately.
+        /// Green corners overlay = found; a saved-but-plain frame = not found
+        /// (so you can visually judge whether it's a size/blur/framing issue).
+        /// </summary>
+        public void SavePreview(byte[] left, byte[] right, int w, int h, string leftPath, string rightPath)
+        {
+            SavePreviewOne(left, w, h, leftPath);
+            SavePreviewOne(right, w, h, rightPath);
+        }
+
+        private void SavePreviewOne(byte[] data, int w, int h, string path)
+        {
+            var mat = BytesToMat(data, w, h);
+            var corners = new VectorOfPointF();
+            var size = new Size(_cornersX, _cornersY);
+            bool found = CvInvoke.FindChessboardCorners(mat, size, corners);
+
+            var color = new Mat();
+            CvInvoke.CvtColor(mat, color, ColorConversion.Gray2Bgr);
+            if (found)
+            {
+                var criteria = new MCvTermCriteria(30, 0.001);
+                CvInvoke.CornerSubPix(mat, corners, new Size(11, 11), new Size(-1, -1), criteria);
+                CvInvoke.DrawChessboardCorners(color, size, corners, found);
+            }
+            CvInvoke.Imwrite(path, color);
+        }
+
         private double[] MatToArray(Mat m)
         {
             var arr = new double[m.Rows * m.Cols * m.NumberOfChannels];

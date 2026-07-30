@@ -10,8 +10,13 @@ using SportSimulator.Vision;
 // Needs the real cameras (Spinnaker), not the mock — see CalibrationRunner.
 if (args.Length > 0 && args[0] == "--calibrate")
 {
-    string calibOutputPath = args.Length > 1 ? args[1] : "stereo_calibration.json";
-    CalibrationRunner.Run(calibOutputPath);
+    bool preview = Array.IndexOf(args, "--preview") >= 0;
+    string calibOutputPath = "stereo_calibration.json";
+    for (int i = 1; i < args.Length; i++)
+    {
+        if (args[i] != "--preview") { calibOutputPath = args[i]; break; }
+    }
+    CalibrationRunner.Run(calibOutputPath, preview);
     return;
 }
 #endif

@@ -34,9 +34,16 @@ namespace SportSimulator.App
         // better (lower RMS) result than exactly the minimum.
         private const int MinFramePairs = 15;
 
-        public static void Run(string outputPath)
+        public static void Run(string outputPath, bool preview = false)
         {
             Console.WriteLine("=== Stereo Calibration ===");
+            if (preview)
+            {
+                Console.WriteLine("Preview mode: each capture also saves left_preview.png /");
+                Console.WriteLine("right_preview.png (overwritten each time) — green grid overlay");
+                Console.WriteLine("if corners were found, plain frame if not. Use these to check");
+                Console.WriteLine("focus/sharpness and framing directly, without opening SpinView.\n");
+            }
             Console.WriteLine("Checkerboard: markhedleyjones.com's Checkerboard-A3-40mm-9x6.pdf");
             Console.WriteLine("(10x7 squares, giving 9x6 inner corners), printed on Letter paper");
             Console.WriteLine("fit-to-printable-area — measured square size 25.6mm (2.56cm), not");
@@ -86,6 +93,13 @@ namespace SportSimulator.App
                 Console.WriteLine(accepted
                     ? $"  Checkerboard found in both cameras — pair {calibrator.FramePairsCollected} accepted."
                     : "  Checkerboard not found in one or both cameras — reposition and try again.");
+
+                if (preview)
+                {
+                    calibrator.SavePreview(left.Data, right.Data, width, height,
+                        "left_preview.png", "right_preview.png");
+                    Console.WriteLine("  Saved left_preview.png / right_preview.png.");
+                }
             }
 
             cameras.Stop();
