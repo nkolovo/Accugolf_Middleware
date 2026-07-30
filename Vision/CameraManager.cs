@@ -190,9 +190,25 @@ namespace SportSimulator.Vision
         {
             try
             {
-                INodeMap sMap   = cam.GetTLStreamNodeMap();
-                IInteger bufNode = sMap.GetNode<IInteger>("StreamDefaultBufferCount");
-                bufNode.Value   = count;
+                INodeMap sMap    = cam.GetTLStreamNodeMap();
+                IInteger bufNode = sMap?.GetNode<IInteger>("StreamDefaultBufferCount");
+                // GetNode<T> returns null rather than throwing when a node isn't
+                // exposed on this camera/GenTL producer combination — found live
+                // on the real hardware (this dev environment has no way to catch
+                // this, no Spinnaker SDK installed here): bufNode.Value = count
+                // threw a NullReferenceException the existing catch below doesn't
+                // catch (it's not a SpinnakerException), crashing the whole app
+                // over an optional buffer-count tuning step. Treat a missing node
+                // the same as the catch already does for a real Spinnaker error —
+                // warn and move on, since this is a performance tweak (guide
+                // default is 10; raise for burst), not something acquisition
+                // actually requires.
+                if (bufNode == null)
+                {
+                    Console.WriteLine("[CameraManager] Buffer config warning: StreamDefaultBufferCount not available on this camera/interface — using its default buffer count.");
+                    return;
+                }
+                bufNode.Value = count;
             }
             catch (SpinnakerException ex)
             {
