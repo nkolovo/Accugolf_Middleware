@@ -52,8 +52,18 @@ namespace SportSimulator.Vision.Calibration
             var cornersR = new VectorOfPointF();
             var size = new Size(_cornersX, _cornersY);
 
-            bool foundL = CvInvoke.FindChessboardCorners(matL, size, cornersL);
-            bool foundR = CvInvoke.FindChessboardCorners(matR, size, cornersR);
+            // Explicit flags rather than relying on the overload's default:
+            // AdaptiveThresh handles uneven/varying lighting across the board,
+            // NormalizeImage histogram-equalizes brightness/contrast first —
+            // both matter here since real-world lighting isn't controlled the
+            // way a bench test would be. Found live: detection was failing
+            // inconsistently (swapping which camera failed) between two very
+            // different lighting conditions even though the board was clearly
+            // legible in saved preview frames, pointing at the search itself
+            // rather than exposure.
+            var cbFlags = CalibCbType.AdaptiveThresh | CalibCbType.NormalizeImage;
+            bool foundL = CvInvoke.FindChessboardCorners(matL, size, cornersL, cbFlags);
+            bool foundR = CvInvoke.FindChessboardCorners(matR, size, cornersR, cbFlags);
 
             if (!foundL || !foundR) return false;
 
@@ -165,7 +175,8 @@ namespace SportSimulator.Vision.Calibration
             var mat = BytesToMat(data, w, h);
             var corners = new VectorOfPointF();
             var size = new Size(_cornersX, _cornersY);
-            bool found = CvInvoke.FindChessboardCorners(mat, size, corners);
+            bool found = CvInvoke.FindChessboardCorners(mat, size, corners,
+                CalibCbType.AdaptiveThresh | CalibCbType.NormalizeImage);
 
             var color = new Mat();
             CvInvoke.CvtColor(mat, color, ColorConversion.Gray2Bgr);
