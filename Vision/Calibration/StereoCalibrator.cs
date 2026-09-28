@@ -52,8 +52,8 @@ namespace SportSimulator.Vision.Calibration
             var cornersR = new VectorOfPointF();
             var size = new Size(_cornersX, _cornersY);
 
-            bool foundL = CvInvoke.FindChessboardCorners(matL, size, cornersL);
-            bool foundR = CvInvoke.FindChessboardCorners(matR, size, cornersR);
+            bool foundL = FindCorners(matL, size, cornersL);
+            bool foundR = FindCorners(matR, size, cornersR);
 
             if (!foundL || !foundR) return false;
 
@@ -146,6 +146,27 @@ namespace SportSimulator.Vision.Calibration
             return m;
         }
 
+        // FindChessboardCornersSB is OpenCV's newer "sector-based" detector,
+        // built specifically to be more robust than the classic
+        // FindChessboardCorners to exactly the conditions this rig struggles
+        // with: a board that reads small in frame (only ~15-20px per square at
+        // this working distance), uneven/dim lighting, and mild blur. Exhaustive
+        // + Accuracy trade a bit more compute for a more thorough search — a
+        // non-issue for this one-shot-per-keypress interactive tool.
+        //
+        // Falls back to the classic detector if SB doesn't find it — different
+        // algorithms, different failure modes, so trying both costs little and
+        // only increases the chance of accepting a pair that's actually usable.
+        private static bool FindCorners(Mat mat, Size size, VectorOfPointF corners)
+        {
+            if (CvInvoke.FindChessboardCornersSB(mat, size, corners,
+                    CalibCbType.Exhaustive | CalibCbType.Accuracy))
+                return true;
+
+            corners.Clear();
+            return CvInvoke.FindChessboardCorners(mat, size, corners);
+        }
+
         /// <summary>
         /// Diagnostic helper for --preview: runs the same corner search
         /// AddFramePair does but only to draw the result and save it to disk —
@@ -165,7 +186,7 @@ namespace SportSimulator.Vision.Calibration
             var mat = BytesToMat(data, w, h);
             var corners = new VectorOfPointF();
             var size = new Size(_cornersX, _cornersY);
-            bool found = CvInvoke.FindChessboardCorners(mat, size, corners);
+            bool found = FindCorners(mat, size, corners);
 
             var color = new Mat();
             CvInvoke.CvtColor(mat, color, ColorConversion.Gray2Bgr);
