@@ -3,6 +3,7 @@
 // ------------------------------------------------------------
 using FluentAssertions;
 using SportSimulator.Vision;
+using SportSimulator.Vision.Calibration;
 using System.Threading;
 using Xunit;
 
@@ -56,9 +57,12 @@ namespace SportSimulator.Tests
             mock.FrameQueue.TryTake(out var frame, millisecondsTimeout: 2000);
 
             frame.Should().NotBeNull();
-            frame!.Width.Should().Be(1280);
-            frame.Height.Should().Be(1024);
-            frame.Data.Length.Should().Be(1280 * 1024, "data must be one byte per pixel (Mono8)");
+            // Must match StereoCalibrationData's default camera model (see MockCameraManager's
+            // SensorW/SensorH) — a resolution mismatch here doesn't throw, it silently makes
+            // StereoRectifier's remap sample from the wrong place and washes out disparity.
+            frame!.Width.Should().Be(StereoCalibrationData.DefaultImageWidth);
+            frame.Height.Should().Be(StereoCalibrationData.DefaultImageHeight);
+            frame.Data.Length.Should().Be(StereoCalibrationData.DefaultImageWidth * StereoCalibrationData.DefaultImageHeight, "data must be one byte per pixel (Mono8)");
         }
 
         [Fact]

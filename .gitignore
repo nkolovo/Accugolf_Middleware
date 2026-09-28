@@ -1,0 +1,18 @@
+# Build output — fully regeneratable from source via `dotnet build`/`dotnet run`.
+# Never commit these: they bloat repo history with binaries that differ on every
+# rebuild (timestamps/build metadata) even when the source hasn't changed, and
+# they're specific to whatever machine/config produced them.
+bin/
+obj/
+
+# Visual Studio / VS Code local state
+.vs/
+*.user
+*.suo
+
+# Rider
+.idea/
+
+# OS cruft
+Thumbs.db
+.DS_Store

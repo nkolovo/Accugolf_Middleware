@@ -52,6 +52,103 @@ namespace SportSimulator.Tests
             return t;
         }
 
+        // ── World-frame correction (tilted rig) ─────────────────────────────────
+        // Regression coverage for the "ball goes the wrong way" bug: this rig's
+        // camera is mounted tilted BACKWARD at the tee (114in up, 33in forward of
+        // it — see notes/14-...md), so "further along the camera's own view axis"
+        // and "further downrange toward the net" are opposite directions. Before
+        // Triangulator.ToWorldFrame existed, a real shot's reported Z DECREASED as
+        // the ball flew toward the net — sent straight to Unity as a negative
+        // Z-velocity, i.e. the ball moving backward. These tests project a KNOWN
+        // world point through the same math MockCameraManager uses to generate
+        // synthetic frames, then verify TriangulateStereo recovers that same world
+        // point — a controlled round-trip, not an inference from noisy live output
+        // (which varies run-to-run with RNG draws and isn't a valid basis for
+        // verifying a sign convention).
+        private const double RigHeightM = StereoCalibrationData.DefaultCameraHeightM;
+        private const double RigForwardOffsetM = StereoCalibrationData.DefaultCameraForwardOffsetM;
+
+        private static StereoCalibrationData MakeTiltedCalibration(double baseline = 0.4953)
+        {
+            var cal = MakeCalibration(baseline);
+            cal.CameraHeightM = RigHeightM;
+            cal.CameraForwardOffsetM = RigForwardOffsetM;
+            return cal;
+        }
+
+        // Mirrors MockCameraManager.ProjectToCamera's math exactly (world point,
+        // tilted/elevated camera pair -> pixel coordinates for both cameras) so
+        // these tests exercise a genuine round trip through Triangulator's inverse.
+        private static (PointF pt0, PointF pt1) ProjectThroughTiltedRig(
+            double worldX, double worldY, double worldZ, double baseline,
+            double fx, double fy, double cx, double cy)
+        {
+            double tiltRad = System.Math.Atan(RigForwardOffsetM / RigHeightM);
+            double sinT = System.Math.Sin(tiltRad), cosT = System.Math.Cos(tiltRad);
+
+            PointF ProjectForCamera(double camX)
+            {
+                double relX = worldX - camX;
+                double relY = worldY - RigHeightM;
+                double relZ = worldZ - RigForwardOffsetM;
+                double yLocal = relY * sinT - relZ * cosT;
+                double zLocal = -relY * cosT - relZ * sinT;
+                double px = fx * relX / zLocal + cx;
+                double py = fy * (-yLocal) / zLocal + cy;
+                return new PointF((float)px, (float)py);
+            }
+
+            return (ProjectForCamera(-baseline / 2.0), ProjectForCamera(baseline / 2.0));
+        }
+
+        [Fact]
+        public void TriangulateStereo_TiltedRig_TeeRoundTripsToOrigin()
+        {
+            var t = new Triangulator();
+            t.Configure(MakeTiltedCalibration());
+            var (pt0, pt1) = ProjectThroughTiltedRig(0, 0, 0, 0.4953, 1800, 1800, 640, 512);
+
+            var result = t.TriangulateStereo(pt0, pt1);
+
+            result.X.Should().BeApproximately(0f, 0.01f);
+            result.Y.Should().BeApproximately(0f, 0.01f);
+            result.Z.Should().BeApproximately(0f, 0.01f);
+        }
+
+        [Fact]
+        public void TriangulateStereo_TiltedRig_DownrangeShot_ZIncreasesTowardNet()
+        {
+            // The bug this guards against: with the tilt correction missing, this
+            // exact point's raw camera-local Z comes back SMALLER than the tee's
+            // (D=~3.01 -> ~2.2), i.e. it looks like the ball moved backward. The
+            // world-frame-corrected Z must increase from 0 toward the true 1.2m the
+            // ball actually traveled downrange, not decrease.
+            var t = new Triangulator();
+            t.Configure(MakeTiltedCalibration());
+            var (pt0, pt1) = ProjectThroughTiltedRig(0, 0.3, 1.2, 0.4953, 1800, 1800, 640, 512);
+
+            var result = t.TriangulateStereo(pt0, pt1);
+
+            result.Z.Should().BeApproximately(1.2f, 0.02f,
+                "world Z must increase toward the net as the ball flies forward, not decrease");
+            result.Y.Should().BeApproximately(0.3f, 0.02f);
+            result.X.Should().BeApproximately(0f, 0.02f);
+        }
+
+        [Fact]
+        public void TriangulateStereo_TiltedRig_LateralOffset_RoundTripsCorrectly()
+        {
+            var t = new Triangulator();
+            t.Configure(MakeTiltedCalibration());
+            var (pt0, pt1) = ProjectThroughTiltedRig(0.5, 0.2, 0.8, 0.4953, 1800, 1800, 640, 512);
+
+            var result = t.TriangulateStereo(pt0, pt1);
+
+            result.X.Should().BeApproximately(0.5f, 0.02f);
+            result.Y.Should().BeApproximately(0.2f, 0.02f);
+            result.Z.Should().BeApproximately(0.8f, 0.02f);
+        }
+
         // ── TriangulateStereo ────────────────────────────────────────────────────
 
         [Fact]
@@ -69,13 +166,19 @@ namespace SportSimulator.Tests
         }
 
         [Fact]
-        public void TriangulateStereo_PerfectDisparity_XYNearZero()
+        public void TriangulateStereo_PerfectDisparity_XIsBaselineCentered_YIsZero()
         {
-            // Ball is centred on image 0 (pixel = principal point), so world X and Y = 0.
-            var t = MakeTriangulator();
+            // Ball is centred on camera0's own image (pixel = principal point) — but
+            // Triangulator now re-centers X onto the stereo pair's shared baseline
+            // midpoint (see Triangulator.ToWorldFrame), not camera0's own optical
+            // axis. A point straight down camera0's axis sits baseline/2 to camera0's
+            // own side of that midpoint, so world X = -baseline/2, not 0. This
+            // fixture has no tilt configured (CameraHeightM defaults to 0), so Y
+            // passes through unchanged and is still 0.
+            var t = MakeTriangulator(baseline: 0.70);
             var result = t.TriangulateStereo(new PointF(640f, 512f), new PointF(10f, 512f));
 
-            result.X.Should().BeApproximately(0f, 0.05f);
+            result.X.Should().BeApproximately(-0.35f, 0.05f);
             result.Y.Should().BeApproximately(0f, 0.05f);
         }
 
@@ -135,27 +238,32 @@ namespace SportSimulator.Tests
         // ── TriangulateMonocular ─────────────────────────────────────────────────
 
         [Fact]
-        public void TriangulateMonocular_PrincipalPoint_WorldXYIsZero()
+        public void TriangulateMonocular_PrincipalPoint_XIsBaselineCentered_YIsZero()
         {
-            // A pixel at the principal point back-projects to (0, 0, Z) in world space.
-            var t = MakeTriangulator();
-            var result = t.TriangulateMonocular(new PointF(640f, 512f), knownZ: 3.0f);
+            // A pixel at the principal point back-projects to (0, 0, Z) relative to
+            // camera0's own axis — but the result is re-centered onto the baseline
+            // midpoint (same reasoning as TriangulateStereo's equivalent test above),
+            // so world X = -baseline/2, not 0. No tilt configured in this fixture, so
+            // Z passes through unchanged as the known depth, and Y is still 0.
+            var t = MakeTriangulator(baseline: 0.70);
+            var result = t.TriangulateMonocular(new PointF(640f, 512f), knownWorldY: 0f, knownWorldZ: 3.0f);
 
             result.Tier.Should().Be(TriangulationTier.Monocular);
             result.Z.Should().BeApproximately(3.0f, 0.001f);
-            result.X.Should().BeApproximately(0f, 0.001f);
+            result.X.Should().BeApproximately(-0.35f, 0.001f);
             result.Y.Should().BeApproximately(0f, 0.001f);
         }
 
         [Fact]
         public void TriangulateMonocular_OffCentrePixel_CorrectWorldX()
         {
-            // Pixel 180px right of principal point at Z=3.0m:
-            //   X = (820 - 640) * 3.0 / 1800 = 180 * 3 / 1800 = 0.30m
-            var t = MakeTriangulator();
-            var result = t.TriangulateMonocular(new PointF(820f, 512f), knownZ: 3.0f);
+            // Pixel 180px right of principal point at Z=3.0m, relative to camera0's
+            // own axis: X_local = (820 - 640) * 3.0 / 1800 = 180 * 3 / 1800 = 0.30m.
+            // Re-centered onto the baseline midpoint: world X = 0.30 - 0.35 = -0.05m.
+            var t = MakeTriangulator(baseline: 0.70);
+            var result = t.TriangulateMonocular(new PointF(820f, 512f), knownWorldY: 0f, knownWorldZ: 3.0f);
 
-            result.X.Should().BeApproximately(0.30f, 0.01f);
+            result.X.Should().BeApproximately(-0.05f, 0.01f);
             result.Y.Should().BeApproximately(0f, 0.001f);
             result.Z.Should().BeApproximately(3.0f, 0.001f);
         }
@@ -164,7 +272,7 @@ namespace SportSimulator.Tests
         public void TriangulateMonocular_ConfidenceIsLow()
         {
             var t = MakeTriangulator();
-            var result = t.TriangulateMonocular(new PointF(640f, 512f), knownZ: 2.0f);
+            var result = t.TriangulateMonocular(new PointF(640f, 512f), knownWorldY: 0f, knownWorldZ: 2.0f);
 
             result.Confidence.Should().BeLessThan(0.5f,
                 "monocular result has lower confidence than stereo");

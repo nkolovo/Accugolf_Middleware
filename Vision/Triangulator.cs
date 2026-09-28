@@ -42,6 +42,14 @@ namespace SportSimulator.Vision
         private double _baselineM;
         private double _fx, _fy, _cx, _cy;
 
+        // World-mounting geometry (see StereoCalibrationData.CameraHeightM/
+        // CameraForwardOffsetM) — how the stereo pair as a whole sits relative to
+        // the tee, as opposed to R/T above (the two cameras' pose relative to EACH
+        // OTHER). Defaults to 0/0 (a level, untilted rig) when unconfigured, in
+        // which case ToWorldFrame below skips the tilt rotation entirely.
+        private double _cameraHeightM, _cameraForwardOffsetM;
+        private double _tiltRad, _slantD, _sinTilt, _cosTilt;
+
         // Tier thresholds (metres)
         private const float FullAgreementM    = 0.05f;  // < 5cm  → Tier 1
         private const float BlendedAgreementM = 0.15f;  // < 15cm → Tier 2, else bad match
@@ -54,8 +62,67 @@ namespace SportSimulator.Vision
             _fy        =  cal.P0[5];
             _cx        =  cal.P0[2];
             _cy        =  cal.P0[6];
+            // Standard OpenCV stereoRectify convention: baseline = -P1[0,3]/P1[0,0].
             _baselineM = -cal.P1[3] / cal.P1[0];
+
+            _cameraHeightM        = cal.CameraHeightM;
+            _cameraForwardOffsetM = cal.CameraForwardOffsetM;
+            if (_cameraHeightM > 0)
+            {
+                _tiltRad = Math.Atan(_cameraForwardOffsetM / _cameraHeightM);
+                _slantD  = Math.Sqrt(_cameraHeightM * _cameraHeightM + _cameraForwardOffsetM * _cameraForwardOffsetM);
+                _sinTilt = Math.Sin(_tiltRad);
+                _cosTilt = Math.Cos(_tiltRad);
+            }
+
             Console.WriteLine($"[Triangulator] Baseline: {_baselineM*1000:F1}mm  fx: {_fx:F1}px");
+        }
+
+        // Converts from the raw disparity/DLT output — X relative to camera0's own
+        // optical axis, Y/Z along the camera's own (possibly tilted) view axis — into
+        // true world coordinates: X centered on the stereo pair's shared baseline
+        // midpoint, Y true vertical height (up positive), Z true downrange distance
+        // from the tee (toward the net, increasing as the ball actually flies away).
+        //
+        // Why this matters, found live: this rig's camera is mounted with a real,
+        // confirmed ~16° tilt aimed BACKWARD at the tee (114in up, ~33in forward of
+        // it — see notes/14-...md) — meaning "further along the camera's own view
+        // axis" and "further downrange toward the net" are OPPOSITE directions.
+        // Before this correction, a real shot's reported Z DECREASED as the ball
+        // flew toward the net, and the middleware fed that straight to Unity as a
+        // negative Z-velocity — sent the ball backward, away from the net, exactly
+        // matching the raw camera-tilted axis's own (wrong, for this purpose)
+        // sense of "forward". Every check earlier in this session looked at speed
+        // magnitude and rough position plausibility, never this sign, so it stayed
+        // invisible until tested end-to-end in Unity.
+        //
+        // The X recentering is unconditional (always needed, tilt or not). The Y/Z
+        // rotation only applies when a real tilt is configured (_cameraHeightM > 0)
+        // — an untilted/unconfigured rig (e.g. TriangulatorTests.cs's generic
+        // fixture) passes Y/Z through unchanged, since camera-local and world axes
+        // already coincide when there's no tilt to correct for.
+        //
+        // yLocal comes in via the standard pinhole formula (pixelY-cy)*Z/fy, which
+        // is Y-DOWN (a physically higher point gives a SMALLER pixel row, hence a
+        // more negative Y here) — this is exactly what the old, now-removed
+        // "Flip Y: OpenCV Y-down -> Unity Y-up" step in SimulatorEngine used to
+        // correct. The rotation math below was derived in terms of a Y-UP physical
+        // quantity, so it needs that same negation applied to its input — missing
+        // this initially caused the rotation to come out rotated into the wrong
+        // quadrant entirely (caught by TriangulateStereo_TiltedRig_DownrangeShot_
+        // ZIncreasesTowardNet, a controlled round-trip test, not by hand-checking
+        // noisy live output).
+        private (float x, float y, float z) ToWorldFrame(float xLocal, float yLocal, float zLocal)
+        {
+            float worldX = xLocal - (float)(_baselineM / 2.0);
+
+            if (_cameraHeightM <= 0)
+                return (worldX, yLocal, zLocal);
+
+            float yPhysical = -yLocal;
+            float worldY = (float)(yPhysical * _sinTilt + (_slantD - zLocal) * _cosTilt);
+            float worldZ = (float)((_slantD - zLocal) * _sinTilt - yPhysical * _cosTilt);
+            return (worldX, worldY, worldZ);
         }
 
         // ── Tier 1 / 2: full stereo — both cameras detected the ball ────────────
@@ -97,9 +164,10 @@ namespace SportSimulator.Vision
             {
                 // Tier 1: methods agree tightly
                 float conf = 1.0f - (diffZ / FullAgreementM) * 0.2f; // 0.80–1.00
+                var (wx1, wy1, wz1) = ToWorldFrame(avgX, avgY, avgZ);
                 return new TriangulatedPoint
                 {
-                    X = avgX, Y = avgY, Z = avgZ,
+                    X = wx1, Y = wy1, Z = wz1,
                     Disparity  = disparity,
                     Confidence = conf,
                     Tier       = TriangulationTier.FullStereo,
@@ -117,9 +185,10 @@ namespace SportSimulator.Vision
                 float bZ = Z1 * blend + Z2 * (1f - blend);
                 float conf = 0.4f + blend * 0.4f; // 0.40–0.80
 
+                var (wx2, wy2, wz2) = ToWorldFrame(bX, bY, bZ);
                 return new TriangulatedPoint
                 {
-                    X = bX, Y = bY, Z = bZ,
+                    X = wx2, Y = wy2, Z = wz2,
                     Disparity  = disparity,
                     Confidence = conf,
                     Tier       = TriangulationTier.BlendedStereo,
@@ -132,14 +201,31 @@ namespace SportSimulator.Vision
         }
 
         // ── Tier 3: monocular fallback — one camera only ─────────────────────────
-        // Uses the detected camera's 2D position + last known Kalman Z for depth.
-        public TriangulatedPoint TriangulateMonocular(PointF pt, float knownZ)
+        // Uses the detected camera's 2D position + the Kalman tracker's own last
+        // (world-frame) belief for depth. knownWorldY/knownWorldZ come straight
+        // from KalmanBallTracker.LastState, which is in WORLD coordinates (same as
+        // everything this class returns) — they get inverted back to a camera-local
+        // depth here (see ToWorldFrame's comment on why local and world axes differ
+        // on this rig) so the pinhole formula below sees a real depth-along-the-
+        // camera's-own-axis, then the fresh pixel-derived X/Y get rotated back out
+        // to world frame before returning. Passing a world-frame Z straight into the
+        // old (pre-tilt-fix) version of this formula silently produced nonsense once
+        // Triangulator started reporting world coordinates instead of camera-local
+        // ones — this two-step (world→local depth→pinhole→local→world) round trip
+        // is what keeps it correct either way.
+        public TriangulatedPoint TriangulateMonocular(PointF pt, float knownWorldY, float knownWorldZ)
         {
-            float X = (float)((pt.X - _cx) * knownZ / _fx);
-            float Y = (float)((pt.Y - _cy) * knownZ / _fy);
+            float zLocal = _cameraHeightM > 0
+                ? (float)(_slantD - knownWorldY * _cosTilt - knownWorldZ * _sinTilt)
+                : knownWorldZ;
+
+            float xLocal = (float)((pt.X - _cx) * zLocal / _fx);
+            float yLocal = (float)((pt.Y - _cy) * zLocal / _fy);
+
+            var (wx, wy, wz) = ToWorldFrame(xLocal, yLocal, zLocal);
             return new TriangulatedPoint
             {
-                X = X, Y = Y, Z = knownZ,
+                X = wx, Y = wy, Z = wz,
                 Disparity  = 0,
                 Confidence = 0.35f,
                 Tier       = TriangulationTier.Monocular,

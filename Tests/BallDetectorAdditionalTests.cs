@@ -206,5 +206,38 @@ namespace SportSimulator.Tests
             var result = detector.Detect(CircleFrame(cx: -50, cy: 120, radius: 8));
             result.Found.Should().BeFalse("a fully off-screen blob should not be detected");
         }
+
+        // ── Spin crop extraction ─────────────────────────────────────────────────
+
+        [Fact]
+        public void BallWellInsideFrame_CropIsPopulated()
+        {
+            var detector = new BallDetector();
+            detector.SetProfile(SphereProfile());
+
+            detector.Detect(BlackFrame());
+            var result = detector.Detect(CircleFrame(cx: 160, cy: 120, radius: 8));
+
+            result.Found.Should().BeTrue();
+            result.Crop.Should().NotBeNull("a ball comfortably inside the frame should yield a usable spin crop");
+            result.CropSize.Should().BeGreaterThan(0);
+            result.Crop!.Length.Should().Be(result.CropSize * result.CropSize);
+        }
+
+        [Fact]
+        public void BallAtCorner_CropExtractionDoesNotThrow()
+        {
+            // Same corner case as BallAtBottomLeftCorner_DoesNotThrow. Crop may be
+            // null (skewed/clipped) or populated depending on exactly how much of
+            // the padded region survives — the only guaranteed invariant is that
+            // extraction itself never throws, same as detection at this corner.
+            var detector = new BallDetector();
+            detector.SetProfile(SphereProfile());
+
+            detector.Detect(BlackFrame());
+            var act = () => detector.Detect(CircleFrame(cx: 2, cy: H - 2, radius: 8));
+
+            act.Should().NotThrow("crop extraction at a corner should degrade gracefully, not crash");
+        }
     }
 }

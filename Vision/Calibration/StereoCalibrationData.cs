@@ -34,65 +34,84 @@ namespace SportSimulator.Vision.Calibration
         public double[] P1 { get; set; } = new double[12];
         public double[] Q  { get; set; } = new double[16];  // disparity-to-depth map
 
-        public int ImageWidth  { get; set; } = 1280;
-        public int ImageHeight { get; set; } = 1024;
+        public int ImageWidth  { get; set; } = 720;
+        public int ImageHeight { get; set; } = 540;
+
+        // World-mounting geometry: how the STEREO PAIR AS A WHOLE sits relative to
+        // the ground/tee, as opposed to R/T above (which only describe the two
+        // cameras' pose relative to EACH OTHER). Stereo calibration never produces
+        // this — it's a rig-installation fact, not a camera-intrinsic one — so it
+        // defaults to 0 (a level, untilted rig, i.e. no correction applied; see
+        // Triangulator's use of these). CreateDefaults() below fills in this rig's
+        // confirmed on-site values; a real calibration JSON without these fields
+        // deserializes to 0/0 (untitled) rather than silently applying a wrong tilt.
+        public double CameraHeightM        { get; set; } = 0.0;
+        public double CameraForwardOffsetM { get; set; } = 0.0;
 
         // --------------------------------------------------------
-        // Defaults: 6mm lens on a 1/1.8" sensor, 700mm baseline.
-        // REPLACE these with your actual calibration output.
+        // Defaults derived from on-site measurements (2026-07-22), NOT a real
+        // calibration. REPLACE by running StereoCalibrator with a checkerboard —
+        // see the class comment above.
         // --------------------------------------------------------
-        public static StereoCalibrationData CreateDefaults(double baselineMetres = 0.70)
+        // Exposed so anything simulating this rig (MockCameraManager) can generate
+        // frames under the SAME camera model these defaults assume, instead of an
+        // independently-guessed resolution/focal-length that silently disagrees.
+        // A mismatch here doesn't throw — it just makes StereoRectifier's remap
+        // sample from the wrong place, which can wash out real disparity almost
+        // entirely (found live-testing the mock pipeline: true ~290px disparity at
+        // working distance measured as only ~4-5px after rectification).
+        public const int DefaultImageWidth  = 720;
+        public const int DefaultImageHeight = 540;
+        public const double DefaultMeasurementDistanceM = 3.015; // slant distance, camera to ball spot
+        public const double DefaultHalfWidthM = 0.6175;          // half of the measured 123.5cm floor width
+        public static double DefaultFx => (DefaultImageWidth / 2.0) / (DefaultHalfWidthM / DefaultMeasurementDistanceM);
+
+        // Confirmed on-site mounting geometry (notes/14-session-2026-07-22-hardware-
+        // bringup.md, "Mounting geometry" line): sensor 114in above the floor, 33in
+        // horizontally forward of the tee/ball spot, aimed at the tee, no yaw. Also
+        // referenced by MockCameraManager, which needs the SAME numbers to generate
+        // synthetic frames under a camera model consistent with what Triangulator
+        // assumes for its world-frame correction (see Triangulator.ToWorldFrame) —
+        // a mismatch here wouldn't throw, it would just make mock-tested trajectories
+        // silently disagree with what the real rig would report.
+        public const double DefaultCameraHeightM        = 2.8956; // 114in
+        public const double DefaultCameraForwardOffsetM = 0.8382; // 33in
+
+        public static StereoCalibrationData CreateDefaults(double baselineMetres = 0.4953)
         {
-            // ⚠️ CALIBRATION TODO — update these before first use:
+            // Resolved on-site 2026-07-22:
             //
-            // 1. BASELINE (parameter above, default 0.70m)
-            //    Measure the physical centre-to-centre distance between your two
-            //    AccuGolf cameras in metres. If you measured centre-to-edge = Xmm,
-            //    baseline = 2 * X / 1000.0.
-            //    e.g. centre-to-edge = 350mm → baseline = 0.70
-            //         centre-to-edge = 420mm → baseline = 0.84
+            // 1. BASELINE (parameter above, 0.4953m) — 19.5in measured center-to-center.
             //
-            // 2. SENSOR RESOLUTION  ← update imageWidth / imageHeight / cx / cy below
-            //    Check SpinView or Spinnaker DeviceInfo for your camera's native
-            //    resolution. Common FLIR options:
-            //      1280×1024 (5:4)  → cx=640, cy=512   fy=fx
-            //      1280×960  (4:3)  → cx=640, cy=480   fy=fx*(480/640)
-            //      1280×720  (16:9) → cx=640, cy=360   fy=fx*(360/640)
+            // 2. SENSOR RESOLUTION — confirmed 720×540 (Blackfly S BFS-PGE-04S2M,
+            //    fixed/locked — no ROI windowing available on this model).
             //
-            // 3. FOV MEASUREMENT  ← determines fx (and fy for non-square sensors)
-            //    You measured: at D inches from the camera, the visible horizontal
-            //    width is ~1000mm (500mm either side of centre).
-            //    Formula: fx = (imageWidth/2) / (0.500 / D_metres)
-            //    Update MEASUREMENT_DISTANCE_M and HALF_WIDTH_M below with your values.
-            //    Current values: 108–120in range → midpoint ~3700px.
+            // 3. FOV MEASUREMENT — floor footprint measured under the camera's FOV:
+            //    123.5cm × 98cm. Used here as an approximate frontal-plane width at
+            //    the slant distance to the ball spot (≈3.015m, from the 114in
+            //    height / 33in forward-offset mounting geometry) — NOT a rigorous
+            //    derivation. The floor is a plane tilted ~16° relative to the
+            //    camera's view axis, so this footprint is really a trapezoid, not
+            //    a clean frontal rectangle; treating it as one introduces error
+            //    that grows toward the near/far edges of the visible floor patch.
+            //    Good enough as a placeholder, not as calibration.
             //
             // Once StereoCalibrator has been run and stereo_calibration.json exists,
             // these defaults are only used as a fallback if the JSON is missing.
 
-            // ── ⚠️ UPDATE THESE ────────────────────────────────────────────────
-            const double MEASUREMENT_DISTANCE_M = 2.8956; // midpoint of 108in–120in
-                                                           // replace with your actual
-                                                           // measured distance in metres
-                                                           // (108in=2.7432, 120in=3.048)
-            const double HALF_WIDTH_M = 0.500;            // half of visible horizontal
-                                                           // width at above distance (m)
-                                                           // you measured ~1000mm total
-                                                           //  → 500mm half-width
+            double cx = DefaultImageWidth  / 2.0;
+            double cy = DefaultImageHeight / 2.0;
 
-            const int IMAGE_WIDTH  = 1280; // ⚠️ confirm against your FLIR sensor spec
-            const int IMAGE_HEIGHT = 1024; // ⚠️ confirm against your FLIR sensor spec
-            // ───────────────────────────────────────────────────────────────────
+            // fx back-calculated from the FOV measurement (horizontal)
+            double fx = DefaultFx;
 
-            double cx = IMAGE_WIDTH  / 2.0;
-            double cy = IMAGE_HEIGHT / 2.0;
-
-            // fx back-calculated from FOV measurement (horizontal)
-            double fx = (IMAGE_WIDTH / 2.0) / (HALF_WIDTH_M / MEASUREMENT_DISTANCE_M);
-
-            // fy: equal to fx for square-pixel sensors with 5:4 aspect (1280×1024).
-            // For other resolutions, fy = fx * (cy / cx).
-            // This formula is general — it stays correct if you update IMAGE_HEIGHT above.
-            double fy = fx * (cy / cx);
+            // fy = fx. For a square-pixel sensor (true of virtually all machine-vision
+            // sensors, including this one), the pixel-to-radian conversion is identical
+            // in both axes regardless of resolution or aspect ratio — aspect ratio only
+            // affects cx/cy, not the fx/fy ratio. (The previous `fx * (cy/cx)` formula
+            // here was wrong: for 1280×1024 it computed fy = 0.8·fx while its own
+            // comment claimed fy = fx for that exact resolution — contradictory.)
+            double fy = fx;
 
             var d = new StereoCalibrationData();
 
@@ -104,12 +123,25 @@ namespace SportSimulator.Vision.Calibration
             d.K1 = new[] { fx, 0, cx,  0, fy, cy,  0, 0, 1.0 };
             d.D1 = new[] { 0.0, 0.0, 0.0, 0.0, 0.0 };
 
-            // Extrinsics: cameras are side-by-side, right cam offset by baseline on X axis
+            // Extrinsics: cameras are side-by-side, right cam offset by baseline on X axis.
+            // Sign: OpenCV's stereo convention defines T such that a point in camera0's
+            // frame maps to camera1's frame via X1 = R*X0 + T. If camera1 (right) sits
+            // physically +baselineMetres to the right of camera0 (left) along X, then
+            // the SAME point expressed in camera1's frame has a SMALLER X — so T's X
+            // component must be NEGATIVE here. Verified empirically against this
+            // Emgu.CV/OpenCV build via CvInvoke.StereoRectify: a positive T here made
+            // Triangulator's standard `baseline = -P1[0,3]/P1[0,0]` formula come out
+            // negative, which poisoned every real-stereo Z (TriangulateStereo's avgZ
+            // range check rejected it) and silently fell back to Monocular's hardcoded
+            // (0,0,0) on every frame, real detections included.
             d.R = new[] { 1.0,0,0, 0,1.0,0, 0,0,1.0 }; // no rotation between cams
-            d.T = new[] { baselineMetres, 0.0, 0.0 };
+            d.T = new[] { -baselineMetres, 0.0, 0.0 };
 
-            d.ImageWidth  = IMAGE_WIDTH;
-            d.ImageHeight = IMAGE_HEIGHT;
+            d.ImageWidth  = DefaultImageWidth;
+            d.ImageHeight = DefaultImageHeight;
+
+            d.CameraHeightM        = DefaultCameraHeightM;
+            d.CameraForwardOffsetM = DefaultCameraForwardOffsetM;
 
             return d;
         }

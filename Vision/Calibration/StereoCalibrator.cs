@@ -52,8 +52,8 @@ namespace SportSimulator.Vision.Calibration
             var cornersR = new VectorOfPointF();
             var size = new Size(_cornersX, _cornersY);
 
-            bool foundL = CvInvoke.FindChessboardCorners(matL, size, cornersL);
-            bool foundR = CvInvoke.FindChessboardCorners(matR, size, cornersR);
+            bool foundL = FindCorners(matL, size, cornersL);
+            bool foundR = FindCorners(matR, size, cornersR);
 
             if (!foundL || !foundR) return false;
 
@@ -63,10 +63,10 @@ namespace SportSimulator.Vision.Calibration
             CvInvoke.CornerSubPix(matR, cornersR, new Size(11,11), new Size(-1,-1), criteria);
 
             // Build object points (flat checkerboard in Z=0 plane)
-            var obj = new Point3D[_cornersX * _cornersY];
+            var obj = new (double X, double Y, double Z)[_cornersX * _cornersY];
             for (int r = 0; r < _cornersY; r++)
                 for (int c = 0; c < _cornersX; c++)
-                    obj[r * _cornersX + c] = new Point3D(c * _squareMm, r * _squareMm, 0);
+                    obj[r * _cornersX + c] = (c * _squareMm, r * _squareMm, 0);
 
             _objPoints.Add(new VectorOfPoint3D32F(Array.ConvertAll(obj,
                 p => new MCvPoint3D32f((float)p.X, (float)p.Y, (float)p.Z))));
@@ -98,11 +98,18 @@ namespace SportSimulator.Vision.Calibration
             var pts0Arr = _imgPts0.Select(v => v.ToArray()).ToArray();
             var pts1Arr = _imgPts1.Select(v => v.ToArray()).ToArray();
 
+            // K0/D0/K1/D1 start empty — there's no separate single-camera
+            // calibration step feeding them a prior estimate, so CalibType.Default
+            // (jointly estimate intrinsics + extrinsics from these frame pairs) is
+            // required here. CalibType.FixIntrinsic (previously used) tells OpenCV
+            // to treat whatever's already in K0/D0/K1/D1 as correct and skip
+            // estimating them — with empty Mats that "fixes" garbage intrinsics
+            // and inflates RMS regardless of how much/varied the capture data is.
             double rms = CvInvoke.StereoCalibrate(
                 objArr, pts0Arr, pts1Arr,
                 K0, D0, K1, D1, imgSize,
                 R, T, E, F,
-                CalibType.FixIntrinsic,
+                CalibType.Default,
                 new MCvTermCriteria(100, 1e-5));
 
             Console.WriteLine($"[Calibrator] RMS reprojection error: {rms:F4} px");
@@ -139,13 +146,64 @@ namespace SportSimulator.Vision.Calibration
             return m;
         }
 
+        // FindChessboardCornersSB is OpenCV's newer "sector-based" detector,
+        // built specifically to be more robust than the classic
+        // FindChessboardCorners to exactly the conditions this rig struggles
+        // with: a board that reads small in frame (only ~15-20px per square at
+        // this working distance), uneven/dim lighting, and mild blur. Exhaustive
+        // + Accuracy trade a bit more compute for a more thorough search — a
+        // non-issue for this one-shot-per-keypress interactive tool.
+        //
+        // Falls back to the classic detector if SB doesn't find it — different
+        // algorithms, different failure modes, so trying both costs little and
+        // only increases the chance of accepting a pair that's actually usable.
+        private static bool FindCorners(Mat mat, Size size, VectorOfPointF corners)
+        {
+            if (CvInvoke.FindChessboardCornersSB(mat, size, corners,
+                    CalibCbType.Exhaustive | CalibCbType.Accuracy))
+                return true;
+
+            corners.Clear();
+            return CvInvoke.FindChessboardCorners(mat, size, corners);
+        }
+
+        /// <summary>
+        /// Diagnostic helper for --preview: runs the same corner search
+        /// AddFramePair does but only to draw the result and save it to disk —
+        /// doesn't affect calibration state. Lets you check focus/framing on
+        /// the actual sensor image instead of guessing from SpinView separately.
+        /// Green corners overlay = found; a saved-but-plain frame = not found
+        /// (so you can visually judge whether it's a size/blur/framing issue).
+        /// </summary>
+        public void SavePreview(byte[] left, byte[] right, int w, int h, string leftPath, string rightPath)
+        {
+            SavePreviewOne(left, w, h, leftPath);
+            SavePreviewOne(right, w, h, rightPath);
+        }
+
+        private void SavePreviewOne(byte[] data, int w, int h, string path)
+        {
+            var mat = BytesToMat(data, w, h);
+            var corners = new VectorOfPointF();
+            var size = new Size(_cornersX, _cornersY);
+            bool found = FindCorners(mat, size, corners);
+
+            var color = new Mat();
+            CvInvoke.CvtColor(mat, color, ColorConversion.Gray2Bgr);
+            if (found)
+            {
+                var criteria = new MCvTermCriteria(30, 0.001);
+                CvInvoke.CornerSubPix(mat, corners, new Size(11, 11), new Size(-1, -1), criteria);
+                CvInvoke.DrawChessboardCorners(color, size, corners, found);
+            }
+            CvInvoke.Imwrite(path, color);
+        }
+
         private double[] MatToArray(Mat m)
         {
             var arr = new double[m.Rows * m.Cols * m.NumberOfChannels];
             m.CopyTo(arr);
             return arr;
         }
-
-        private record Point3D(double X, double Y, double Z);
     }
 }
