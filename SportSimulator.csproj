@@ -39,6 +39,16 @@
     </Reference>
   </ItemGroup>
 
+  <!-- ── Ship the stereo calibration next to the production exe ───────────
+       SimulatorEngine.LoadCalibration also looks in the exe's own folder, so
+       the real-camera build works however it's launched. net48 only: the mock
+       (net10.0-windows) is built to match CreateDefaults(), not this rig's
+       real calibration.
+  ─────────────────────────────────────────────────────────────────────────-->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <None Update="stereo_calibration.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <!-- ── Exclude Tests/ subfolder from main project glob ─────────────────
        SDK-style projects glob **/*.cs from the project root, which would
        pull in the test files and their xUnit/FluentAssertions references.
