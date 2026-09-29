@@ -151,11 +151,21 @@ namespace SportSimulator.App
 
         private void LoadCalibration()
         {
+            // Check the working directory first (dotnet run from the repo root),
+            // then next to the exe — launching the built exe directly (shortcut,
+            // double-click, startup task) sets the working directory elsewhere, and
+            // silently falling back to CreateDefaults() on the real rig would send
+            // Unity badly-scaled positions/velocities with no other symptom.
+            string exeDirPath = System.IO.Path.Combine(AppContext.BaseDirectory, CalibPath);
+            string? calibFile = System.IO.File.Exists(CalibPath) ? System.IO.Path.GetFullPath(CalibPath)
+                              : System.IO.File.Exists(exeDirPath) ? exeDirPath
+                              : null;
+
             StereoCalibrationData cal;
-            if (System.IO.File.Exists(CalibPath))
+            if (calibFile != null)
             {
-                cal = StereoCalibrationData.LoadFromFile(CalibPath);
-                Console.WriteLine($"[Engine] Loaded calibration from {CalibPath}");
+                cal = StereoCalibrationData.LoadFromFile(calibFile);
+                Console.WriteLine($"[Engine] Loaded calibration from {calibFile}");
             }
             else
             {
