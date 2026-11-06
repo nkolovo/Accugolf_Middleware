@@ -27,12 +27,21 @@ namespace SportSimulator.Profiles
             {
                 SportId = "soccer", DisplayName = "Soccer",
                 DiameterMm = 220, MassGrams = 430, IsSphere = true,
-                MinContourArea = 800, MaxContourArea = 8000,
+                // Measured, not computed: the real BallDetector reports 11,928px² (~125px
+                // across) for this ball at the spot in a real camera frame. The window
+                // allows a ball partly hidden by a foot at the low end, and one about 1m
+                // off the floor (closer to the overhead cameras, ~34,000px²) near the top.
+                // A previous 15,000-70,000 came from a bad calibration's fx≈3046px and
+                // would have rejected the real ball as too small.
+                MinContourArea = 4000, MaxContourArea = 40000,
+                BrighterThanBackground = true, // white panels on a darker floor; see BallDetector
                 // 3 m/s: comfortably below the "10-30 m/s typical" floor below
                 // (room for a genuinely weak shot/pass) but well above a hand
                 // repositioning the ball at the spot — see SportProfile.MinSpeedMps.
                 MinSpeedMps = 3, MaxSpeedMps = 60,
-                OutputSpin = true, OutputLaunchAngle = true,
+                // Spin off for now: replays of one real kick's identical frames read 32, 78
+                // and 535rpm with different axes, and the game turns that into a false curve.
+                OutputSpin = false, OutputLaunchAngle = true,
                 ProcessNoise = 0.008f, MeasurementNoise = 0.09f,
                 // Soccer: 10–30 m/s typical → 700mm crossed in 23–70ms → 3–8 frames.
                 // +3 occlusion buffer for body/foot blocking the ball at impact.

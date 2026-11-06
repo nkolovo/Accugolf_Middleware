@@ -66,6 +66,14 @@ namespace SportSimulator.Vision.Calibration
         public const double DefaultHalfWidthM = 0.6175;          // half of the measured 123.5cm floor width
         public static double DefaultFx => (DefaultImageWidth / 2.0) / (DefaultHalfWidthM / DefaultMeasurementDistanceM);
 
+        // The focal length a real calibration is fixed at unless overridden, because the
+        // checkerboard images can't determine it (see StereoCalibrator.Calibrate). From a
+        // size 5 ball (radius 0.11m) resting on the floor: the mounting geometry gives its
+        // distance, its true edges give its disparity, and focal = distance * disparity /
+        // baseline. Its apparent size agrees, and a 494mm calibrated baseline matches the
+        // tape. Good to about 1%: the error only scales depth, so speed barely changes.
+        public const double MeasuredFocalPx = 1770;
+
         // Confirmed on-site mounting geometry (notes/14-session-2026-07-22-hardware-
         // bringup.md, "Mounting geometry" line): sensor 114in above the floor, 33in
         // horizontally forward of the tee/ball spot, aimed at the tee, no yaw. Also
@@ -76,8 +84,9 @@ namespace SportSimulator.Vision.Calibration
         // silently disagree with what the real rig would report.
         public const double DefaultCameraHeightM        = 2.8956; // 114in
         public const double DefaultCameraForwardOffsetM = 0.8382; // 33in
+        public const double DefaultBaselineM            = 0.4953; // 19.5in, tape-measured center-to-center
 
-        public static StereoCalibrationData CreateDefaults(double baselineMetres = 0.4953)
+        public static StereoCalibrationData CreateDefaults(double baselineMetres = DefaultBaselineM)
         {
             // Resolved on-site 2026-07-22:
             //

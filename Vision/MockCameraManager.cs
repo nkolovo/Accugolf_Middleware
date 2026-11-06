@@ -224,7 +224,7 @@ namespace SportSimulator.Vision
             // it has a real "last seen at rest" timestamp to measure the shot's
             // start against, rather than falling back to its degraded (needs 2 real
             // detections) path. A handful of stationary frames here models that.
-            const int restFrameCount = 10;
+            int restFrameCount = Tracking.KalmanBallTracker.MinRestSamplesForConfidence + 5;
             for (int r = 0; r < restFrameCount && !ct.IsCancellationRequested; r++)
             {
                 var rest0 = ProjectToCamera(bx, by, bz, 0, timestampUs);

@@ -6,6 +6,23 @@ using SportSimulator.App;
 using SportSimulator.Vision;
 
 #if NET48
+// Re-run the calibration math on saved corners, no cameras needed:
+// dotnet run -f net48 -- --calibrate-from stereo_calibration_points.json [output-path] [--focal N]
+if (args.Length > 1 && args[0] == "--calibrate-from")
+{
+    string fromOutputPath = "stereo_calibration.json";
+    double? focalPx = null;
+    for (int i = 2; i < args.Length; i++)
+    {
+        if (args[i] == "--focal" && i + 1 < args.Length)
+            focalPx = double.Parse(args[++i], System.Globalization.CultureInfo.InvariantCulture);
+        else
+            fromOutputPath = args[i];
+    }
+    CalibrationRunner.RunFromPoints(args[1], fromOutputPath, focalPx);
+    return;
+}
+
 // Separate from normal operation: dotnet run -f net48 -- --calibrate [output-path]
 // Needs the real cameras (Spinnaker), not the mock — see CalibrationRunner.
 if (args.Length > 0 && args[0] == "--calibrate")

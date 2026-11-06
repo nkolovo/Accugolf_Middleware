@@ -16,6 +16,7 @@ namespace SportSimulator.Models
         // Detection tuning
         public int MinContourArea { get; set; }
         public int MaxContourArea { get; set; }
+        public bool BrighterThanBackground { get; set; } = false; // ignore anything darker than the empty scene
 
         // Used by KalmanBallTracker's rest-position seeding to tell a real shot
         // apart from the ball just being nudged/repositioned at address: the
