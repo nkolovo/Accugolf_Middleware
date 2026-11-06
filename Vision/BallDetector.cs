@@ -43,6 +43,58 @@ namespace SportSimulator.Vision
         private readonly Dictionary<int, Mat> _backgrounds = new();
         private SportProfile _profile = new();
 
+        private const int ForegroundThreshold = 25;
+        private const int BackgroundUpdateFrames = 64;       // about 4 brightness levels a second at 262fps
+        private const int SceneChangedUpdatesToReseed = 20;  // about 5s
+        private readonly Dictionary<int, int> _frameCounts = new();
+        private readonly Dictionary<int, int> _sceneChangedUpdates = new();
+
+        // Background model (this camera's own only). It has to keep meaning "empty
+        // scene", so nothing in view may ever be learned, however long it sits there.
+        // Blending frames in at 30% couldn't do that, per frame or per pixel: a ball
+        // sitting at address blended in within 10 frames, and pixels of a person that
+        // happened to be close to the floor's brightness were learned as they passed,
+        // leaving ghost blobs twice the ball's size stuck to it once they moved (found
+        // replaying a real session). The real floor never needs that speed: it held
+        // still to within 33 stray pixels across a 48s session with a person in it.
+        //
+        // So a pixel that looks like background creeps one brightness level toward the
+        // current frame per update. That tracks real lighting drift, and because only
+        // pixels already within the threshold can move, what gets learned by mistake
+        // stays below the threshold and heals by itself.
+        private void UpdateBackground(int cameraIndex, Mat background, Mat frame)
+        {
+            using var difference = new Mat();
+            using var unchanged = new Mat();
+            CvInvoke.AbsDiff(frame, background, difference);
+            CvInvoke.Threshold(difference, unchanged, ForegroundThreshold, 255, ThresholdType.BinaryInv);
+
+            // The one thing that should replace foreground: a lighting change, which
+            // would otherwise read as a frame-filling blob forever. A person can cover
+            // half the frame too, but not motionlessly for this long in normal use.
+            _sceneChangedUpdates.TryGetValue(cameraIndex, out int changedUpdates);
+            changedUpdates = CvInvoke.CountNonZero(unchanged) < frame.Rows * frame.Cols / 2 ? changedUpdates + 1 : 0;
+            _sceneChangedUpdates[cameraIndex] = changedUpdates;
+            if (changedUpdates >= SceneChangedUpdatesToReseed)
+            {
+                frame.CopyTo(background);
+                _sceneChangedUpdates[cameraIndex] = 0;
+                Console.WriteLine($"[BallDetector] cam={cameraIndex} most of the frame changed for about " +
+                    "5 seconds: treating it as a lighting change, background reset");
+                return;
+            }
+
+            using var step = new Mat();
+            using var one = new ScalarArray(1);
+            CvInvoke.Compare(frame, background, step, CmpType.GreaterThan);
+            CvInvoke.BitwiseAnd(step, unchanged, step);
+            CvInvoke.Add(background, one, background, step);
+
+            CvInvoke.Compare(frame, background, step, CmpType.LessThan);
+            CvInvoke.BitwiseAnd(step, unchanged, step);
+            CvInvoke.Subtract(background, one, background, step);
+        }
+
         public void SetProfile(SportProfile p) => _profile = p;
 
         public DetectionResult Detect(CameraFrame frame)
@@ -57,14 +109,21 @@ namespace SportSimulator.Vision
                 return new DetectionResult { Found = false };
             }
 
+            // A ball brighter than the floor is told apart from what's darker than it:
+            // its own shadow, which otherwise pulls its center a different way in each
+            // camera, and a dark foot, which otherwise stays joined to the ball by shadow
+            // until the ball has left the frame (a real kick got no detections at all).
             using var diff = new Mat();
-            CvInvoke.AbsDiff(raw, background, diff);
+            if (_profile.BrighterThanBackground)
+                CvInvoke.Subtract(raw, background, diff);
+            else
+                CvInvoke.AbsDiff(raw, background, diff);
 
             // Gaussian blur + threshold
             using var blurred = new Mat();
             CvInvoke.GaussianBlur(diff, blurred, new Size(5, 5), 1.5);
             using var thresh = new Mat();
-            CvInvoke.Threshold(blurred, thresh, 25, 255, ThresholdType.Binary);
+            CvInvoke.Threshold(blurred, thresh, ForegroundThreshold, 255, ThresholdType.Binary);
 
             // Morphological cleanup
             using var kernel = CvInvoke.GetStructuringElement(ElementShape.Ellipse, new Size(5, 5), new Point(-1, -1));
@@ -77,11 +136,35 @@ namespace SportSimulator.Vision
 
             DetectionResult best = new() { Found = false, TimestampUs = frame.TimestampUs, CameraIndex = frame.CameraIndex };
             float bestScore = 0;
+            double bestArea = 0;
+
+            // Diagnostic only: area and the frame edge are the ONLY rejection criteria
+            // in this loop (circularity affects ranking between passing candidates,
+            // it doesn't reject on its own) — so tracking the largest contour that
+            // failed it tells us, when nothing is found, whether background
+            // subtraction is isolating a ball-shaped blob at all (and it's just
+            // outside MinContourArea/MaxContourArea) versus not finding any
+            // meaningful blob whatsoever (a lighting/contrast/threshold problem
+            // instead). One line per empty frame, not per rejected contour.
+            double largestRejectedArea = 0;
 
             for (int i = 0; i < contours.Size; i++)
             {
                 double area = CvInvoke.ContourArea(contours[i]);
-                if (area < _profile.MinContourArea || area > _profile.MaxContourArea) continue;
+
+                // A blob cut off by the frame edge is a ball partly out of view: its
+                // centroid is off by up to a radius, and differently in each camera, so
+                // it triangulates to a wrong position that moves fast enough to look like
+                // a shot (found live-simulating a ball rolled into view: 8.6 m/s, 30cm off).
+                var bounds = CvInvoke.BoundingRectangle(contours[i]);
+                bool cutOff = bounds.Left <= 0 || bounds.Top <= 0 ||
+                              bounds.Right >= thresh.Cols || bounds.Bottom >= thresh.Rows;
+
+                if (cutOff || area < _profile.MinContourArea || area > _profile.MaxContourArea)
+                {
+                    if (area > largestRejectedArea) largestRejectedArea = area;
+                    continue;
+                }
 
                 // Image-moment centroid, not the bounding rectangle's center: rect.X
                 // and rect.Width are integers, so rect.X + rect.Width/2f can only ever
@@ -109,6 +192,18 @@ namespace SportSimulator.Vision
                 }
                 float r = MathF.Sqrt((float)area / MathF.PI);
 
+                // Thresholding on brightness misses a ball's dimmer side and any black
+                // panel on its outline, on different sides in each camera, so the centroid
+                // of what's left is biased: 10px of false disparity read a resting ball
+                // 12cm too high. What IS visible still lies on the ball's true circle.
+                if (_profile.BrighterThanBackground && _profile.IsSphere)
+                {
+                    var circle = CvInvoke.MinEnclosingCircle(contours[i]);
+                    cx = circle.Center.X;
+                    cy = circle.Center.Y;
+                    r = circle.Radius;
+                }
+
                 // Circularity score (1.0 = perfect circle; lower for pucks)
                 double perim = CvInvoke.ArcLength(contours[i], true);
                 float circularity = _profile.IsSphere
@@ -119,6 +214,7 @@ namespace SportSimulator.Vision
                 if (score > bestScore)
                 {
                     bestScore = score;
+                    bestArea = area;
                     best = new DetectionResult
                     {
                         Found = true,
@@ -131,46 +227,61 @@ namespace SportSimulator.Vision
                 }
             }
 
-            // Rolling background update (this camera's own model only). Weight was
-            // 0.95/0.05 — background only catches up 5% toward the current frame
-            // per cycle, taking ~20 frames to "forget" any pixel the ball recently
-            // passed through. For a ball moving mostly in depth that ghost trail
-            // stays small and localized (found working fine for straight, azimuth=0
-            // shots). For a ball also sweeping laterally across the sensor, the
-            // trail elongates across many distinct pixel positions — morphological
-            // Close merges it into the ball's own contour, and the combined area
-            // grows every frame until it exceeds MaxContourArea and gets rejected
-            // entirely (found live: contour area climbing 5512->7868->...->10562px²
-            // over consecutive frames on a left-azimuth mock shot, well past
-            // soccer's 8000px² ceiling). Faster decay (0.7/0.3) keeps the trail short
-            // regardless of travel direction — a real, general improvement (any real
-            // ball crossing the frame instead of receding straight back would hit
-            // the same growth), not just a mock-testing tweak.
-            //
-            // Selective now, not unconditional: only refresh when NOTHING was found
-            // this frame. A ball sitting at address before the shot (always true on
-            // real hardware — the golfer takes a stance, sits the ball, THEN swings)
-            // would otherwise get slowly absorbed into the background at 30%/frame:
-            // ~97% blended in after just 10 identical frames, i.e. under 100ms at
-            // this rig's ~200fps. Found live via KalmanBallTracker's new rest-
-            // position seeding: with 10 resting frames before a shot, the very first
-            // real "moving" detection came back displaced by only ~4cm instead of
-            // the true ~36cm a real 18 m/s shot covers in that time — the ball had
-            // partially merged into its own background, corrupting the diffed
-            // contour's centroid right at the one moment detection quality matters
-            // most. Skipping the update on frames where a ball WAS found means the
-            // background only ever represents "empty scene", however long the ball
-            // sits still first.
-            if (!best.Found)
-                CvInvoke.AddWeighted(background, 0.7, raw, 0.3, 0, background);
+            _frameCounts.TryGetValue(frame.CameraIndex, out int frameCount);
+            _frameCounts[frame.CameraIndex] = ++frameCount;
+            if (frameCount % BackgroundUpdateFrames == 0)
+                UpdateBackground(frame.CameraIndex, background, raw);
 
             if (best.Found)
             {
                 best.Crop = ExtractCrop(raw, best.Center, best.RadiusPx, out int cropSize);
                 best.CropSize = cropSize;
+
+                if (ShouldLog(frame.CameraIndex, LogFound))
+                    Console.WriteLine($"[BallDetector] cam={frame.CameraIndex} ball detected: " +
+                        $"area={bestArea:F0}px² center=({best.Center.X:F0},{best.Center.Y:F0}) conf={best.Confidence:F2}");
+            }
+            else if (largestRejectedArea >= _profile.MinContourArea / 4)
+            {
+                // A blob WAS isolated by background subtraction but every candidate
+                // fell outside [MinContourArea, MaxContourArea] — points at the area
+                // window being wrong for what the camera's actually seeing, not a
+                // lighting/contrast/background problem, or at a ball only partly in view.
+                // If this never prints either, background subtraction isn't isolating
+                // anything ball-shaped at all. Specks far too small to matter don't count.
+                if (ShouldLog(frame.CameraIndex, LogRejected))
+                    Console.WriteLine($"[BallDetector] cam={frame.CameraIndex} blob seen but rejected: " +
+                        $"{largestRejectedArea:F0}px² (window is {_profile.MinContourArea}-{_profile.MaxContourArea}px², " +
+                        "or it touches the frame edge)");
+            }
+            else
+            {
+                ShouldLog(frame.CameraIndex, LogNothing);
             }
 
             return best;
+        }
+
+        // Per camera: a repeat every ~10s while nothing changes, and a change at most
+        // twice a second, since a person in view flips found/rejected constantly. These
+        // lines buried the [Shot] line under hundreds of others, and logging every frame
+        // was 500 console writes a second on the thread that has to keep up with the cameras.
+        private const int LogNothing = 0, LogFound = 1, LogRejected = 2;
+        private const int FramesBetweenRepeats = 2620;
+        private const int MinFramesBetweenLogs = 130;
+        private readonly Dictionary<int, (int state, int framesSinceLog)> _logStates = new();
+
+        private bool ShouldLog(int cameraIndex, int state)
+        {
+            if (!_logStates.TryGetValue(cameraIndex, out var s))
+                s = (LogNothing, FramesBetweenRepeats);
+
+            int frames = s.framesSinceLog + 1;
+            bool log = state != LogNothing &&
+                       (frames >= FramesBetweenRepeats || (state != s.state && frames >= MinFramesBetweenLogs));
+
+            _logStates[cameraIndex] = (state, log ? 0 : frames);
+            return log;
         }
 
         // Fixed output size for spin crops. Kept a multiple of 4 so Emgu.CV's

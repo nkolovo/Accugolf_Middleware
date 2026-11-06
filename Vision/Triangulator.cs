@@ -75,7 +75,9 @@ namespace SportSimulator.Vision
                 _cosTilt = Math.Cos(_tiltRad);
             }
 
-            Console.WriteLine($"[Triangulator] Baseline: {_baselineM*1000:F1}mm  fx: {_fx:F1}px");
+            Console.WriteLine($"[Triangulator] Baseline: {Math.Abs(_baselineM) * 1000:F1}mm " +
+                              $"({(_baselineM < 0 ? "cam0 images as right camera" : "cam0 images as left camera")})  " +
+                              $"fx: {_fx:F1}px");
         }
 
         // Converts from the raw disparity/DLT output — X relative to camera0's own
@@ -112,9 +114,14 @@ namespace SportSimulator.Vision
         // quadrant entirely (caught by TriangulateStereo_TiltedRig_DownrangeShot_
         // ZIncreasesTowardNet, a controlled round-trip test, not by hand-checking
         // noisy live output).
+        //
+        // +X always points from camera 0 (the left one) to camera 1, the shooter's right
+        // when facing the screen. On the real rig that's image -X, because the cameras
+        // look back toward the tee, which is also what makes the baseline negative: real
+        // footage shows the shooter's left wrist and standing foot on the image's +X side.
         private (float x, float y, float z) ToWorldFrame(float xLocal, float yLocal, float zLocal)
         {
-            float worldX = xLocal - (float)(_baselineM / 2.0);
+            float worldX = (xLocal - (float)(_baselineM / 2.0)) * Math.Sign(_baselineM);
 
             if (_cameraHeightM <= 0)
                 return (worldX, yLocal, zLocal);
@@ -128,9 +135,18 @@ namespace SportSimulator.Vision
         // ── Tier 1 / 2: full stereo — both cameras detected the ball ────────────
         public TriangulatedPoint TriangulateStereo(PointF pt0, PointF pt1)
         {
+            // Sign-aware: which camera sits on which side IN IMAGE SPACE depends on
+            // how the pair is physically mounted, and the calibration's baseline
+            // sign encodes it. On the real rig, camera 0 (physically left, serial
+            // 24182871) images like the RIGHT camera (every real calibration came
+            // out with a negative baseline, and the board appears further left in
+            // cam0's frame than cam1's), so real disparities are negative. The old
+            // "disparity <= 0.5 → behind baseline" check rejected every one of them.
+            // With baseline and disparity sharing a sign, Z = fx*B/d stays positive
+            // and ToWorldFrame's baseline-midpoint recentering is already signed.
             float disparity = pt0.X - pt1.X;
-            if (disparity <= 0.5f)
-                return Monocular(pt0, "Negative disparity — ball behind baseline");
+            if (disparity * Math.Sign(_baselineM) <= 0.5f)
+                return Monocular(pt0, "Disparity sign/magnitude inconsistent with baseline — ball behind baseline or mismatched detection");
 
             // Disparity formula (fast)
             float Z1 = (float)(_fx * _baselineM / disparity);
@@ -256,7 +272,7 @@ namespace SportSimulator.Vision
         // Significantly better than the original 1067px estimate due to
         // the narrower FOV (more telephoto) of the AccuGolf cameras.
         public float DepthPrecisionMm(float Z_m) =>
-            (float)(_baselineM > 0 ? (Z_m * Z_m * 1000f) / (_fx * _baselineM) : float.NaN);
+            (float)(_baselineM != 0 ? (Z_m * Z_m * 1000f) / (_fx * Math.Abs(_baselineM)) : float.NaN);
 
         // SetTo(float[]) treats the array as a scalar — only the first element is used.
         // Matrix<float> with indexer is the reliable approach (same pattern as KalmanBallTracker).

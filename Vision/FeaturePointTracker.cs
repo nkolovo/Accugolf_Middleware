@@ -203,7 +203,10 @@ namespace SportSimulator.Vision
             if (maxVal < 0.5) return null;
 
             float matchedX = searchX0 + maxLoc.X + patchHalf;
-            if (lx - matchedX <= 0.5f) return null; // non-positive disparity — behind baseline
+            // Must share the expected disparity's sign — on the real rig disparities
+            // are negative (see Triangulator.TriangulateStereo), so "positive only"
+            // rejected every real match.
+            if ((lx - matchedX) * Math.Sign(expectedDisparityPx) <= 0.5f) return null;
 
             return new PointF(matchedX, ly);
         }

@@ -18,6 +18,13 @@ namespace SportSimulator.Vision.Calibration
 
         public bool IsReady { get; private set; }
 
+        // CalibZeroDisparity gives both rectified views the same principal point, which
+        // Triangulator's disparity formula assumes. Shared with StereoCalibrator because
+        // Build() below recomputes (and overwrites) whatever the calibration file holds:
+        // when the two disagreed, cx0 and cx1 differed by 4.3px at runtime, which put a
+        // resting ball ~4cm too high, despite a calibration file that looked correct.
+        public const StereoRectifyType Mode = StereoRectifyType.CalibZeroDisparity;
+
         public void Build(StereoCalibrationData cal)
         {
             var imgSize = new Size(cal.ImageWidth, cal.ImageHeight);
@@ -44,7 +51,7 @@ namespace SportSimulator.Vision.Calibration
             var roi1 = new Rectangle();
             CvInvoke.StereoRectify(K0, D0, K1, D1, imgSize, R, T,
                 R0, R1, P0, P1, Q,
-                StereoRectifyType.Default, 0.0, imgSize,
+                Mode, 0.0, imgSize,
                 ref roi0, ref roi1);
 
             cal.R0 = MatToArray(R0); cal.R1 = MatToArray(R1);

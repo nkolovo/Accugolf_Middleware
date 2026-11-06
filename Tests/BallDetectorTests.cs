@@ -76,6 +76,110 @@ namespace SportSimulator.Tests
             result.Found.Should().BeFalse("uniform black frame matches background exactly");
         }
 
+        // ── Background model ─────────────────────────────────────────────────────
+
+        private static CameraFrame Lit(CameraFrame frame, byte level)
+        {
+            for (int i = 0; i < frame.Data.Length; i++)
+                if (frame.Data[i] == 0) frame.Data[i] = level;
+            return frame;
+        }
+
+        // While only part of the ball has crossed the frame edge its blob is below
+        // MinContourArea; that part must not be absorbed into the background.
+        [Fact]
+        public void BallEnteringThroughFrameEdge_IsFoundAtRest_AndLeavesNoGhost()
+        {
+            var detector = new BallDetector();
+            detector.SetProfile(new SportProfile { IsSphere = true, MinContourArea = 400, MaxContourArea = 3000 });
+            detector.Detect(BlackFrame());
+
+            for (int cx = -20; cx <= 60; cx++)
+                detector.Detect(BallFrame(cx, 120, radius: 20));
+
+            for (int i = 0; i < 50; i++)
+            {
+                var resting = detector.Detect(BallFrame(60, 120, radius: 20));
+                resting.Found.Should().BeTrue("a ball that rolled in stays visible however long it rests");
+                resting.Center.X.Should().BeApproximately(60f, 1f);
+            }
+
+            detector.Detect(BlackFrame()).Found.Should().BeFalse("nothing should remain once the ball has left");
+        }
+
+        [Fact]
+        public void GradualLightingDrift_IsTrackedAroundARestingBall()
+        {
+            var detector = new BallDetector();
+            detector.SetProfile(GolfProfile());
+            detector.Detect(BlackFrame());
+
+            // One level every 100 frames: about 2.6 levels a second at the real frame rate.
+            for (int i = 0; i < 3000; i++)
+            {
+                var result = detector.Detect(Lit(BallFrame(160, 120), (byte)(1 + i / 100)));
+                result.Found.Should().BeTrue();
+                result.Center.X.Should().BeApproximately(160f, 1f);
+                result.RadiusPx.Should().BeLessThan(12f, "drift must not merge into the ball's blob");
+            }
+        }
+
+        // Pixels of a person close to the floor's brightness must not get learned: that
+        // left ghost blobs stuck to the ball after the person moved away.
+        [Fact]
+        public void SomethingNearBackgroundBrightness_PassingThrough_LeavesNoGhost()
+        {
+            var detector = new BallDetector();
+            detector.SetProfile(GolfProfile());
+            detector.Detect(Lit(BlackFrame(), 80));
+
+            // A big dim shape, within the threshold of the floor, lingering for half a second.
+            for (int i = 0; i < 130; i++)
+                detector.Detect(Lit(BlackFrame(), 100));
+
+            detector.Detect(Lit(BlackFrame(), 80)).Found.Should().BeFalse();
+            var ball = detector.Detect(Lit(BallFrame(160, 120), 80));
+            ball.Found.Should().BeTrue();
+            ball.RadiusPx.Should().BeLessThan(12f, "the ball's blob must be just the ball");
+        }
+
+        // Darker than the floor isn't the ball: its shadow pulled its center a different
+        // way in each camera, and a dark foot stayed joined to it through the kick.
+        [Fact]
+        public void BrighterThanBackground_IgnoresADarkShapeTouchingTheBall()
+        {
+            var detector = new BallDetector();
+            detector.SetProfile(new SportProfile { IsSphere = true, BrighterThanBackground = true, MinContourArea = 400, MaxContourArea = 3000 });
+            detector.Detect(Lit(BlackFrame(), 80));
+
+            var frame = Lit(BallFrame(160, 120, radius: 20), 80);
+            for (int row = 120; row < H; row++)         // a dark leg from the ball off the frame's edge
+                for (int col = 180; col < 220; col++)
+                    frame.Data[row * W + col] = 10;
+
+            var result = detector.Detect(frame);
+
+            result.Found.Should().BeTrue();
+            result.Center.X.Should().BeApproximately(160f, 1.5f);
+            result.Center.Y.Should().BeApproximately(120f, 1.5f);
+            result.RadiusPx.Should().BeApproximately(20f, 2f);
+        }
+
+        [Fact]
+        public void LightingStepAcrossTheFrame_IsAbsorbedAfterAFewSeconds()
+        {
+            var detector = new BallDetector();
+            detector.SetProfile(GolfProfile());
+            detector.Detect(BlackFrame());
+
+            for (int i = 0; i < 1300; i++)
+                detector.Detect(Lit(BlackFrame(), 100)).Found.Should().BeFalse("a frame-filling blob isn't a ball");
+
+            var ball = detector.Detect(Lit(BallFrame(160, 120), 100));
+            ball.Found.Should().BeTrue("detection recovers once the new lighting is the background");
+            ball.Center.X.Should().BeApproximately(160f, 1f);
+        }
+
         // ── Ball detection ───────────────────────────────────────────────────────
 
         [Fact]

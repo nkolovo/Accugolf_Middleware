@@ -52,7 +52,7 @@ namespace SportSimulator.Tests
             // Ball sits at rest before the shot — every real shot starts this way
             // (see KalmanBallTracker.Update's settling gate, MinRestSamplesForConfidence)
             // — feed enough agreeing samples to clear it before any real motion.
-            const int restSamples = 5;
+            int restSamples = KalmanBallTracker.MinRestSamplesForConfidence;
             for (int i = 0; i < restSamples; i++)
                 tracker.Update(0f, 0f, 5f, (long)((i - restSamples) * dt * 1_000_000f));
 
@@ -83,7 +83,7 @@ namespace SportSimulator.Tests
             // ~10 m/s along x, ~48 m/s along z so the seed lands on a real, moving
             // state once it's displaced from rest.
             const long dtUs = 5006;
-            const int restSamples = 5;
+            int restSamples = KalmanBallTracker.MinRestSamplesForConfidence;
             for (int i = 0; i < restSamples; i++)
                 tracker.Update(0f, 0f, 5f, (i - restSamples) * dtUs);
             for (int i = 0; i < 8; i++)
@@ -102,7 +102,7 @@ namespace SportSimulator.Tests
             // Coasting should never produce NaN or very large values
             var tracker = MakeTracker();
             const long dtUs = 5006;
-            const int restSamples = 5;
+            int restSamples = KalmanBallTracker.MinRestSamplesForConfidence;
             for (int i = 0; i < restSamples; i++)
                 tracker.Update(0f, 0f, 5f, (i - restSamples) * dtUs);
             for (int i = 0; i < 8; i++)
@@ -172,6 +172,30 @@ namespace SportSimulator.Tests
             tracker.Update(0.01f, 0f, 5f, 0);
 
             tracker.HasFix.Should().BeFalse("a slow displacement should be treated as a repositioning nudge, not a shot");
+        }
+
+        [Fact]
+        public void BallRollingInSlowly_IsNotAShot_ThenARealKickIs()
+        {
+            // 0.4 m/s is ~2mm a frame. The rest average lags behind a rolling ball until
+            // it's over 3cm away, which must not read as a 3cm jump in a single frame.
+            var tracker = MakeTrackerWithSpeedGates(minSpeedMps: 3, maxSpeedMps: 60);
+            const long dtUs = 5006;
+            long t = 0;
+
+            for (int i = 0; i < 300; i++, t += dtUs)
+            {
+                tracker.Update(-0.6f + i * 0.002f, 0.11f, 0f, t);
+                tracker.HasFix.Should().BeFalse("a ball rolling in at walking pace isn't a shot");
+            }
+            for (int i = 0; i < KalmanBallTracker.MinRestSamplesForConfidence + 10; i++, t += dtUs)
+                tracker.Update(0f, 0.11f, 0f, t);
+            tracker.HasFix.Should().BeFalse();
+
+            tracker.Update(0f, 0.11f, 0.1f, t); // 10cm in one frame: ~20 m/s
+
+            tracker.HasFix.Should().BeTrue();
+            tracker.LastState.vz.Should().BeApproximately(20f, 1f);
         }
 
         [Fact]

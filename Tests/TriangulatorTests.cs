@@ -52,6 +52,49 @@ namespace SportSimulator.Tests
             return t;
         }
 
+        // ── Mirrored camera arrangement (negative baseline) ──────────────────────
+        // Every real calibration of this rig came out with a negative baseline:
+        // camera 0 images like the RIGHT camera, so real disparities are negative.
+        // TriangulateStereo used to reject all of them as "behind the baseline".
+
+        [Fact]
+        public void TriangulateStereo_NegativeBaseline_RecoversDepth()
+        {
+            // Mirrored convention: P1 translation is +fx*B, putting camera 1's center
+            // at X = -B in camera 0's frame. A point straight ahead of camera 0 at
+            // Z=2 then lands at x = cx + fx*B/Z in camera 1 → disparity = -630px.
+            const double fx = 1800.0, fy = 1800.0, cx = 640.0, cy = 512.0, B = 0.70;
+            var cal = MakeCalibration(B);
+            cal.P1 = new[] { fx, 0, cx, fx * B, 0, fy, cy, 0, 0, 0, 1.0, 0 };
+
+            var t = new Triangulator();
+            t.Configure(cal);
+
+            var result = t.TriangulateStereo(new PointF(640f, 512f), new PointF(1270f, 512f));
+
+            result.Tier.Should().Be(TriangulationTier.FullStereo, "a consistent negative disparity is a valid match on a mirrored rig");
+            result.Z.Should().BeApproximately(2.0f, 0.02f);
+            // A point in front of camera 0 sits B/2 from the midpoint, on camera 0's side:
+            // world -X, whichever way the image's X runs on this rig.
+            result.X.Should().BeApproximately(-(float)(B / 2), 0.02f);
+        }
+
+        [Fact]
+        public void TriangulateStereo_NegativeBaseline_PositiveDisparityRejected()
+        {
+            const double fx = 1800.0, fy = 1800.0, cx = 640.0, cy = 512.0, B = 0.70;
+            var cal = MakeCalibration(B);
+            cal.P1 = new[] { fx, 0, cx, fx * B, 0, fy, cy, 0, 0, 0, 1.0, 0 };
+
+            var t = new Triangulator();
+            t.Configure(cal);
+
+            // Wrong-sign disparity for this arrangement — a mismatched detection.
+            var result = t.TriangulateStereo(new PointF(640f, 512f), new PointF(10f, 512f));
+
+            result.Tier.Should().Be(TriangulationTier.Monocular);
+        }
+
         // ── World-frame correction (tilted rig) ─────────────────────────────────
         // Regression coverage for the "ball goes the wrong way" bug: this rig's
         // camera is mounted tilted BACKWARD at the tee (114in up, 33in forward of

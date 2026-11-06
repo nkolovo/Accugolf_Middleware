@@ -70,8 +70,9 @@ namespace SportSimulator.Tracking
         // seen before the ball has been confirmed resting for at least this many
         // consecutive samples is treated as a NEW candidate rest position (still
         // being placed), not a shot — see Update(). Real players pause far longer
-        // than this minimum (~25ms at 200fps) before actually striking the ball,
-        // so it doesn't meaningfully delay detecting a genuine one.
+        // than this minimum (~0.2s at the real 262fps) before actually striking the
+        // ball, so it doesn't delay a genuine one, while a ball rolling through view
+        // at shot-like speed never stays in one spot long enough to pass it.
         //
         // That gate alone doesn't catch a second, different case: the ball can
         // sit still for seconds (clearing the gate many times over) and then get
@@ -90,8 +91,10 @@ namespace SportSimulator.Tracking
         // Minimum consecutive agreeing samples required before the ball is
         // considered genuinely at rest — see the gate in Update() and the class
         // comment above for why this exists (placement motion, not just noise).
-        public const int MinRestSamplesForConfidence = 5;
+        public const int MinRestSamplesForConfidence = 50;
+        private const long MaxHiddenBeforeShotUs = 250_000;
         private float _restSumX, _restSumY, _restSumZ;
+        private float _lastSampleX, _lastSampleY, _lastSampleZ;
         private int _restSampleCount;
         private long _lastRestTimestampUs;
 
@@ -180,7 +183,17 @@ namespace SportSimulator.Tracking
 
             if (!_initialized)
             {
-                if (_restSampleCount == 0)
+                float stepM = MathF.Sqrt((mx - _lastSampleX) * (mx - _lastSampleX) +
+                                         (my - _lastSampleY) * (my - _lastSampleY) +
+                                         (mz - _lastSampleZ) * (mz - _lastSampleZ));
+                _lastSampleX = mx; _lastSampleY = my; _lastSampleZ = mz;
+
+                // A foot hides a struck ball for a few frames at most. If it has been
+                // gone longer than this it was carried or rolled off, and wherever it
+                // reappears isn't a shot from where it sat.
+                bool ballWasAway = timestampUs - _lastRestTimestampUs > MaxHiddenBeforeShotUs;
+
+                if (_restSampleCount == 0 || ballWasAway)
                 {
                     // First-ever detection: nothing to compare against yet. Seed
                     // the running average with it and wait for the next one to
@@ -233,8 +246,14 @@ namespace SportSimulator.Tracking
                 // the ball to adjust its placement clears the settling gate
                 // above easily (the ball may have sat for seconds), and without
                 // this check would look exactly like a very slow "shot".
+                //
+                // Measured from the previous sample, not from the rest average: the
+                // average lags a ball rolling in slowly, so "3cm from the average, in one
+                // frame's dt" read as 6 m/s for a ball really moving 0.4 m/s, and started
+                // a fake shot that then swallowed the real kick. A real strike is the same
+                // either way, since its previous sample is the rest position.
                 float restDt = ClampDt((timestampUs - _lastRestTimestampUs) / 1_000_000f);
-                float impliedSpeed = MathF.Sqrt(dx * dx + dy * dy + dz * dz) / restDt;
+                float impliedSpeed = stepM / restDt;
 
                 if (impliedSpeed < _minSpeedMps)
                 {

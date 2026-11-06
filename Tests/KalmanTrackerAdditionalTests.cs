@@ -64,7 +64,7 @@ namespace SportSimulator.Tests
             var tracker = MakeTracker();
             float dt    = 1f / 120f;
             float vTrue = -10f;
-            const int restSamples = 5;
+            int restSamples = KalmanBallTracker.MinRestSamplesForConfidence;
 
             for (int i = 0; i < restSamples; i++)
                 tracker.Update(0f, 0f, 5f, (long)((i - restSamples) * dt * 1_000_000f));
@@ -84,7 +84,7 @@ namespace SportSimulator.Tests
             var tracker = MakeTracker();
             float dt    = 1f / 120f;
             float vTrue = -5f;
-            const int restSamples = 5;
+            int restSamples = KalmanBallTracker.MinRestSamplesForConfidence;
 
             for (int i = 0; i < restSamples; i++)
                 tracker.Update(0f, 0f, 5f, (long)((i - restSamples) * dt * 1_000_000f));

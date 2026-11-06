@@ -21,6 +21,7 @@ namespace SportSimulator.App
         private readonly BallDetector      _detector = new();
         private readonly KalmanBallTracker _tracker = new();
         private readonly SportProfileRegistry _registry = new();
+        private readonly StereoClock     _clock = new();
         private readonly StereoRectifier _rectifier = new();
         private readonly Triangulator    _triangulator = new();
         private readonly SpinEstimator   _spinEstimator = new();
@@ -73,24 +74,15 @@ namespace SportSimulator.App
         private int _maxCoastFrames = 5;
         private int _coastFrames = 0;
 
-        // Triangulator.TriangulateMonocular computes X/Y from a single camera's pixel
-        // position PLUS the tracker's own last-known Z — not an independent Z
-        // measurement (and X/Y inherit that same non-independence, since their scale
-        // is pixel * Z / fx). Originally this got fed straight back into the Kalman
-        // filter via Update(), so during a sustained run of monocular-only cycles
-        // (common once real stereo agreement gets shaky further from the camera),
-        // nothing ever independently confirmed Z — the filter just echoed back
-        // whatever it already believed, and any small error in the Z-velocity
-        // estimate compounded unbounded the longer the streak ran. Found live: a
-        // faster (25 m/s) mock shot spent longer in this state per real-time
-        // interval and the final result diverged to a nonsensical (10.6, 6.6, 55.4)
-        // position. A first attempt at fixing this capped how many CONSECUTIVE
-        // monocular fixes could feed Update() before falling back to coasting — but
-        // no fixed tick count worked: the throttled [Tracking] log only prints every
-        // 20th real cycle, so caps of both 5 and 15 were being exceeded well before
-        // even the first post-stereo log line, freezing the sent result at an
-        // under-developed early position every time. The actual fix is simpler and
-        // needs no threshold at all: see the Predict()/Update() branch below.
+        // Stereo fixes of the shot in progress: its final velocity is fitted through
+        // them, and they show when a "shot" has stopped in view.
+        private readonly List<(long us, float x, float y, float z)> _shotSamples = new();
+        private const int MinShotSamples     = 3;     // fewer than this isn't a ball in flight
+        private const int FootContactSamples = 1;     // the foot may still be accelerating the ball
+        private const int StoppedSamples     = 40;    // ~150ms at the real 262fps
+        private const float StoppedWithinM   = 0.03f;
+        private const float ShotGateM        = 0.3f;  // well above a real prediction error
+        private const float FrameSeconds     = 1f / 262f;
 
         // Most recent ball crop seen per camera, for frame-to-frame spin correlation.
         // Keyed by CameraIndex. See SpinEstimator.cs for method + current limits
@@ -108,6 +100,7 @@ namespace SportSimulator.App
         // backspin/sidespin terms — see Spin3DEstimator.cs class comment.
         private Vec3 _lastSpinAxis = default;
         private int  _logFrameCounter = 0;
+        private int  _shotCount = 0;
 
         // Holds the most recently computed BallData from a REAL (non-KalmanOnly)
         // measurement — i.e. the Kalman filter's fused estimate as of the latest
@@ -183,6 +176,16 @@ namespace SportSimulator.App
 
         private void OnProfileCommand(ProfileSelectCommand cmd)
         {
+            // UDP is connectionless — there's no handshake/"connection" the way TCP
+            // has one. This is the closest honest equivalent: a ProfileSelectCommand
+            // is real, observable evidence Unity is running and reached the
+            // middleware. Logged unconditionally (before the early-return below),
+            // since without it this line never printed anything at all when Unity's
+            // sport already matched the already-active default (soccer matches
+            // soccer on this rig) — every one of Unity's startup retries hit the
+            // early-return with zero visible confirmation Unity was ever heard from.
+            Console.WriteLine($"[Engine] Received ProfileSelectCommand from Unity: '{cmd.SportId}'");
+
             // Unity's ProfileSelectSender resends the same sport a few times on
             // startup in case the middleware isn't listening yet (no ack in this
             // protocol — see Assets/Scripts/ProfileSelectSender.cs). Re-applying an
@@ -214,12 +217,29 @@ namespace SportSimulator.App
         {
             while (_running)
             {
-                // Drain all frames that arrived since last iteration
+                // One cycle = one frame from each camera, or as much as arrives before
+                // the 5ms timeout if a camera has gone quiet. Never "until the queue
+                // goes quiet": two cameras at 200fps deliver a frame at least every
+                // ~5ms, so with continuous real capture that wait never timed out and
+                // nothing past this loop ever ran — no triangulation, no [Tracking], no
+                // shot, however good the detections were. The mock hid this because its
+                // frames stop after a short flight. (Found with a real-rate simulated
+                // kick: ~1,570 detections, zero [Tracking] lines, zero packets.)
                 DetectionResult? det0 = null, det1 = null;
                 CameraFrame? rectFrame0 = null, rectFrame1 = null;
+                bool seen0 = false, seen1 = false;
 
-                while (_cameras.FrameQueue.TryTake(out var frame, 5))
+                // Spin only once a shot is underway. A resting ball has no spin to
+                // measure, and estimating it on every frame couldn't keep up with 400
+                // frames a second: the bounded queue stayed full for as long as the ball
+                // sat there, so the kick's ~5 frames arrived late or were lost, one
+                // camera's capture thread starved the other, and frames stopped pairing.
+                bool estimateSpin = !_skipSpinEstimation && _tracker.HasFix;
+
+                while (!(seen0 && seen1) && _cameras.FrameQueue.TryTake(out var frame, 5))
                 {
+                    if (frame.CameraIndex == 0) seen0 = true; else seen1 = true;
+
                     // Detection, triangulation (disparity + DLT via P0/P1), and
                     // stereo point-matching for 3D spin all assume RECTIFIED image
                     // coordinates — undistorted, with corresponding points on the
@@ -228,85 +248,29 @@ namespace SportSimulator.App
                     var rectified = RectifyFrame(frame);
                     var det = _detector.Detect(rectified);
                     if (!det.Found) continue;
-                    if (!_skipSpinEstimation) UpdateSpinEstimate(det);
+                    if (estimateSpin) UpdateSpinEstimate(det);
                     if (det.CameraIndex == 0) { det0 = det; rectFrame0 = rectified; }
                     else                      { det1 = det; rectFrame1 = rectified; }
                 }
 
-                TriangulatedPoint? pt3d = null;
+                // Only a stereo fix counts as seeing the ball. One camera alone can't give
+                // depth, and after a real kick what one camera saw was usually a hand: it
+                // kept a finished shot "alive" for over a second while its reported position
+                // ran off to nonsense. Mid-shot, a fix also has to be where the ball could be.
+                var stereo = det0 != null && det1 != null
+                    ? _triangulator.TriangulateStereo(det0.Center, det1.Center)
+                    : null;
+                bool ballSeen = stereo != null
+                    && stereo.Tier != TriangulationTier.Monocular
+                    && (!_tracker.HasFix || IsNearPrediction(stereo));
 
-                // ── Tier 1 / 2: both cameras this cycle ─────────────────────────
-                if (det0 != null && det1 != null)
+                TriangulatedPoint pt3d;
+                if (ballSeen)
                 {
-                    pt3d = _triangulator.TriangulateStereo(det0.Center, det1.Center);
-
-                    // If stereo disagreed and fell to monocular internally, enrich it
-                    // with the Kalman's last Z — but only once a real stereo fix has
-                    // already established a genuine Z. Before that, LastState.z is
-                    // itself a meaningless 0, so "enriching" with it just produces
-                    // ANOTHER degenerate (0,0,0) point — found by seeing every single
-                    // one of a Kalman seed's buffered measurements come back at exactly
-                    // (0.000, 0.000, 0.000): this self-referential loop, not real data,
-                    // was what the seed was actually being built from. Same root cause
-                    // as the Tier 3 fix below, just a different code path into it.
-                    if (pt3d.Tier == TriangulationTier.Monocular && pt3d.Z == 0)
-                    {
-                        if (!_tracker.HasFix)
-                        {
-                            _coastFrames++;
-                            if (_coastFrames > _maxCoastFrames) continue;
-                            pt3d = new TriangulatedPoint
-                            {
-                                X = 0, Y = 0, Z = 0,
-                                Confidence = 0.05f,
-                                Tier = TriangulationTier.KalmanOnly,
-                                TierReason = "Stereo self-rejected, no prior fix yet to enrich from"
-                            };
-                        }
-                        else
-                        {
-                            var (kx, ky, kz, _, _, _) = _tracker.LastState;
-                            pt3d = _triangulator.TriangulateMonocular(det0.Center, ky, kz);
-                        }
-                    }
-
-                    if (pt3d.Tier != TriangulationTier.KalmanOnly)
-                    {
-                        if (!_skipSpinEstimation) UpdateSpin3D(rectFrame0!, rectFrame1!, det0, pt3d);
-                        _coastFrames = 0;
-                    }
+                    pt3d = stereo!;
+                    if (estimateSpin) UpdateSpin3D(rectFrame0!, rectFrame1!, det0!, pt3d);
+                    _coastFrames = 0;
                 }
-                // ── Tier 3: only one camera this cycle ──────────────────────────
-                else if (det0 != null || det1 != null)
-                {
-                    // TriangulateMonocular needs an existing depth reference (the
-                    // tracker's own last Z) — before any real stereo (Tier 1/2) fix
-                    // has ever landed, that's a meaningless 0, and treating it as
-                    // real would hand the tracker a fabricated point. That point
-                    // would then poison KalmanBallTracker's two-point velocity seed
-                    // (see its class comment) once a genuine stereo fix follows.
-                    // Coast instead until stereo actually establishes a real Z.
-                    if (!_tracker.HasFix)
-                    {
-                        _coastFrames++;
-                        if (_coastFrames > _maxCoastFrames) continue;
-                        pt3d = new TriangulatedPoint
-                        {
-                            X = 0, Y = 0, Z = 0,
-                            Confidence = 0.05f,
-                            Tier = TriangulationTier.KalmanOnly,
-                            TierReason = "Single camera, no stereo fix yet to anchor depth"
-                        };
-                    }
-                    else
-                    {
-                        var single = (det0 ?? det1)!;
-                        var (_, ky, kz, _, _, _) = _tracker.LastState;
-                        pt3d = _triangulator.TriangulateMonocular(single.Center, ky, kz);
-                        _coastFrames = 0;
-                    }
-                }
-                // ── Tier 4: no detection — Kalman coast ─────────────────────────
                 else
                 {
                     _coastFrames++;
@@ -319,6 +283,7 @@ namespace SportSimulator.App
                         SendPendingShotAndReset();
                         continue;
                     }
+                    if (!_tracker.HasFix) continue;
 
                     var (kx, ky, kz, _, _, _) = _tracker.LastState;
                     float coastConf = Math.Max(0.05f, 0.3f - _coastFrames * (0.25f / _maxCoastFrames));
@@ -343,28 +308,28 @@ namespace SportSimulator.App
 
                 // Real frame-capture timestamp when we have one — NOT wall-clock time
                 // of this call — so KalmanBallTracker can compute its own real elapsed
-                // dt regardless of how many frames got batched into this cycle. Falls
-                // back to wall-clock only for a pure coast cycle (no detection at all
-                // this cycle, so no frame timestamp exists) — see KalmanBallTracker.
-                long ts = det0?.TimestampUs ?? det1?.TimestampUs
-                    ?? DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() * 1000;
+                // dt regardless of how many frames got batched into this cycle.
+                long ts = _clock.Next(det0?.TimestampUs, det1?.TimestampUs);
 
-                // Only feed genuinely independent measurements into Update() — Monocular
-                // is deliberately routed to Predict() alongside KalmanOnly, not just
-                // "real" tiers in general. Its X/Y/Z all derive from the tracker's own
-                // last-known Z (see the class comment above), so calling Update() with
-                // it would just be the filter confirming its own prior belief back to
-                // itself — the exact self-referential loop that caused unbounded Z
-                // drift on faster shots. Predict()-only means a long monocular streak
-                // simply coasts on the velocity last established by real stereo, which
-                // is a static Kalman gets right by construction, instead of ratcheting
-                // off some part-fabricated "measurement" — no magic streak-length
-                // threshold needed.
                 (float x, float y, float z, float vx, float vy, float vz) state;
-                if (pt3d.Tier == TriangulationTier.KalmanOnly || pt3d.Tier == TriangulationTier.Monocular)
+                if (pt3d.Tier == TriangulationTier.KalmanOnly)
                     state = _tracker.Predict(ts);
                 else
                     state = _tracker.Update(mx, my, mz, ts);
+
+                // A real shot's ball leaves the view. One that has stopped in view wasn't
+                // a shot (a nudge, a foot, a bad detection), so drop it rather than stay
+                // "in flight" on a resting ball and swallow the real kick that follows.
+                if (ballSeen && _tracker.HasFix)
+                {
+                    _shotSamples.Add((ts, mx, my, mz));
+                    if (HasStopped())
+                    {
+                        Console.WriteLine("[Engine] Ball stopped in view: not a shot, waiting for the next one");
+                        ResetShot();
+                        continue;
+                    }
+                }
 
                 var (sx, sy, sz, svx, svy, svz) = state;
                 float speed       = MathF.Sqrt(svx*svx + svy*svy + svz*svz);
@@ -400,16 +365,15 @@ namespace SportSimulator.App
                 // gathering the seed buffer (see KalmanBallTracker.Update), so
                 // caching on tier alone caught that and sent a spurious speed=0
                 // "shot" if a brief early coast-timeout hit before seeding finished.
-                // Actually sent once, when the shot ends (Tier 4 coast-timeout
-                // branch above / SendPendingShotAndReset below).
+                // Actually sent once, when the shot ends (coast-timeout branch
+                // above / SendPendingShotAndReset below).
                 if (pt3d.Tier != TriangulationTier.KalmanOnly && _tracker.HasFix)
                     _pendingShotData = ballData;
 
                 // Throttled live-tracking readout — diagnostic only, not a send
-                // indicator. At ~200fps, logging every frame would be an unreadable
-                // firehose; every 20th frame is still a live ~10Hz readout while
-                // testing, without flooding the console.
-                if (++_logFrameCounter % 20 == 0)
+                // indicator. Every ~5s while the ball waits, so the [Shot] line stands
+                // out; a few lines across a shot's ~10 frames.
+                if (++_logFrameCounter % (_tracker.HasFix ? 5 : 1310) == 0)
                 {
                     Console.WriteLine(
                         $"[Tracking] pos=({sx:F2},{sy:F2},{sz:F2}) speed={speed:F1}m/s tier={pt3d.Tier} " +
@@ -428,13 +392,92 @@ namespace SportSimulator.App
         {
             if (_pendingShotData == null) return;
 
-            _udp?.Send(_pendingShotData);
-            Console.WriteLine(
-                $"[Shot] Sent final result: pos=({_pendingShotData.PosX:F2},{_pendingShotData.PosY:F2},{_pendingShotData.PosZ:F2}) " +
-                $"speed={_pendingShotData.SpeedMps:F1}m/s spin={_pendingShotData.SpinRpm:F0}rpm " +
-                $"conf={_pendingShotData.Confidence:F2}");
+            if (_shotSamples.Count < MinShotSamples)
+            {
+                Console.WriteLine($"[Engine] Only {_shotSamples.Count} frame(s) of motion: not a shot, waiting for the next one");
+                ResetShot();
+                return;
+            }
 
+            ApplyFlightVelocity(_pendingShotData);
+
+            // The fit sees through what started this "shot". A person shading the ball
+            // while placing it makes its detected position jump, which looks like a shot
+            // start, but across all its frames the ball hasn't really gone anywhere.
+            // Sent to the game, these made it hop at 0.1 and 1.4 m/s (found live).
+            if (_pendingShotData.SpeedMps < _activeProfile.MinSpeedMps)
+            {
+                Console.WriteLine($"[Engine] Only moving {_pendingShotData.SpeedMps:F1}m/s: not a shot, waiting for the next one");
+                ResetShot();
+                return;
+            }
+
+            _udp?.Send(_pendingShotData);
+
+            float sideDeg = MathF.Atan2(_pendingShotData.VelX, _pendingShotData.VelZ) * 180f / MathF.PI;
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(
+                $"[Shot] #{++_shotCount}: {_pendingShotData.SpeedMps:F1} m/s, launch {_pendingShotData.LaunchAngleDeg:F0} deg, " +
+                $"{MathF.Abs(sideDeg):F0} deg {(sideDeg >= 0 ? "right" : "left")}");
+            Console.ResetColor();
+            Console.WriteLine(
+                $"       vel=({_pendingShotData.VelX:F1},{_pendingShotData.VelY:F1},{_pendingShotData.VelZ:F1}) " +
+                $"frames={_shotSamples.Count} spin={_pendingShotData.SpinRpm:F0}rpm conf={_pendingShotData.Confidence:F2}");
+            Console.WriteLine();
+
+            ResetShot();
+        }
+
+        // A straight line through the flight's stereo fixes. The Kalman estimate starts
+        // from the very first motion, when the foot is still accelerating the ball, and
+        // has only ~10 frames to recover before the ball leaves the view: it read 7 m/s
+        // for a real kick moving 11-12 m/s. Gravity is negligible over those ~40ms.
+        private void ApplyFlightVelocity(BallData shot)
+        {
+            int first = _shotSamples.Count >= MinShotSamples + FootContactSamples ? FootContactSamples : 0;
+            long t0 = _shotSamples[first].us;
+            double n = 0, st = 0, stt = 0, sx = 0, sy = 0, sz = 0, stx = 0, sty = 0, stz = 0;
+            for (int i = first; i < _shotSamples.Count; i++)
+            {
+                var (us, x, y, z) = _shotSamples[i];
+                double t = (us - t0) / 1e6;
+                n++; st += t; stt += t * t;
+                sx += x; sy += y; sz += z;
+                stx += t * x; sty += t * y; stz += t * z;
+            }
+            double denom = n * stt - st * st;
+            if (denom <= 0) return;
+
+            shot.VelX = (float)((n * stx - st * sx) / denom);
+            shot.VelY = (float)((n * sty - st * sy) / denom);
+            shot.VelZ = (float)((n * stz - st * sz) / denom);
+            shot.SpeedMps = MathF.Sqrt(shot.VelX * shot.VelX + shot.VelY * shot.VelY + shot.VelZ * shot.VelZ);
+            if (_activeProfile.OutputLaunchAngle)
+                shot.LaunchAngleDeg = MathF.Atan2(shot.VelY, MathF.Sqrt(shot.VelX * shot.VelX + shot.VelZ * shot.VelZ)) * 180f / MathF.PI;
+        }
+
+        private bool IsNearPrediction(TriangulatedPoint p)
+        {
+            var (x, y, z, vx, vy, vz) = _tracker.LastState;
+            float dt = (_coastFrames + 1) * FrameSeconds;
+            float dx = p.X - (x + vx * dt), dy = p.Y - (y + vy * dt), dz = p.Z - (z + vz * dt);
+            return MathF.Sqrt(dx * dx + dy * dy + dz * dz) < ShotGateM;
+        }
+
+        private bool HasStopped()
+        {
+            if (_shotSamples.Count <= StoppedSamples) return false;
+            var a = _shotSamples[_shotSamples.Count - 1];
+            var b = _shotSamples[_shotSamples.Count - 1 - StoppedSamples];
+            float dx = a.x - b.x, dy = a.y - b.y, dz = a.z - b.z;
+            return MathF.Sqrt(dx * dx + dy * dy + dz * dz) < StoppedWithinM;
+        }
+
+        private void ResetShot()
+        {
             _pendingShotData = null;
+            _shotSamples.Clear();
             _tracker.Configure(_activeProfile);
             _coastFrames = 0;
             _lastSpinRpm = 0f;
